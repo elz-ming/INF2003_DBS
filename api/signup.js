@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       );
 
       // Redirect to index.html after successful registration
-      res.writeHead(302, { Location: "../screens/login.html" });
+      res.writeHead(302, { Location: "/" });
       res.end();
     } catch (error) {
       console.error("Error during sign-up:", error);
