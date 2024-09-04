@@ -1,0 +1,45 @@
+/* Import the Poppins font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+html,
+body {
+  font-size: 4px;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  color: white; /* Set all text color to white */
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevents scrolling when using full-screen backgrounds */
+}
+
+#background {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  z-index: -5;
+}
+
+#background-black,
+#background-purple {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+/* Apply the outer gradient */
+#background-black {
+  background: linear-gradient(
+    to right,
+    rgba(146, 69, 222, 1),
+    rgba(95, 126, 255, 1)
+  );
+  z-index: -2;
+}
+
+/* Apply the inner gradient */
+#background-purple {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+  z-index: -1;
+}
