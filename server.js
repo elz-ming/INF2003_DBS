@@ -8,11 +8,11 @@ const PORT = process.env.PORT || 3000;
 
 // Database connection setup using environment variables
 const pool = new Pool({
-  user: process.env.DB_USER, // Replace with your PostgreSQL username
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME, // Replace with your database name
-  password: process.env.DB_PASSWORD, // Replace with your PostgreSQL password
-  port: process.env.DB_PORT, // Default PostgreSQL port
+  user: process.env.POSTGRES_USER, // Replace with your PostgreSQL username
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_NAME, // Replace with your database name
+  password: process.env.POSTGRES_PASSWORD, // Replace with your PostgreSQL password
+  port: process.env.POSTGRES_PORT, // Default PostgreSQL port
 });
 
 // Middleware to parse JSON
