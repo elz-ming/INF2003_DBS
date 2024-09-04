@@ -4,7 +4,7 @@ const db = require("../db"); // Import the database connection
 module.exports = async (req, res) => {
   if (req.method === "GET") {
     try {
-      const result = await pool.query("SELECT * FROM users"); // Replace with your table name
+      const result = await db.query("SELECT * FROM users"); // Replace with your table name
       res.status(200).json(result.rows);
     } catch (err) {
       console.error(err);
