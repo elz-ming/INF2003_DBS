@@ -1,10 +1,4 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/api/auth", "dest": "/api/auth.js" },
-    { "src": "/", "dest": "/api/auth.js" },
-    { "src": "/index.html", "dest": "/api/auth.js" },
-    { "src": "/screens/login.html", "dest": "/api/auth.js" },
-    { "src": "/screens/register.html", "dest": "/api/auth.js" }
-  ]
+  "routes": []
 }
