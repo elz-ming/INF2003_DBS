@@ -56,3 +56,12 @@ main {
 .login-container button:hover {
   background-color: #4a64d8;
 }
+
+.login-container p {
+  font-size: 2rem;
+}
+
+.login-container a {
+  color: inherit; /* Inherit color from the parent element */
+  text-decoration: underline; /* Remove underline */
+}

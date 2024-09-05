@@ -56,3 +56,12 @@ main {
 .register-container button:hover {
   background-color: #4a64d8;
 }
+
+.register-container p {
+  font-size: 2rem;
+}
+
+.register-container a {
+  color: inherit; /* Inherit color from the parent element */
+  text-decoration: underline; /* Remove underline */
+}
