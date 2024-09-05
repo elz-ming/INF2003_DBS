@@ -9,7 +9,6 @@ module.exports = async (req, res) => {
 
     // Check if all fields are provided
     if (!name || !email || !password || !confirmPassword) {
-      console.log(confirmPassword);
       return res.status(400).send(`
         <p>All fields are required.</p>
         <a href="/screens/register.html">Go back to the sign-up page</a>

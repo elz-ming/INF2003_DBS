@@ -11,9 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (!response.ok) {
         // Redirect to login if not authenticated or on error
         window.location.href = "/screens/login.html";
-      } else {
-        // Handle successful authentication
-        console.log("Authenticated:", response.status);
       }
     })
     .catch((error) => console.error("Error checking auth:", error));

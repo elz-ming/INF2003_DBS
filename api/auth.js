@@ -7,10 +7,6 @@ module.exports = (req, res) => {
   const isAuthenticated = cookies.auth === "true";
   const previousURL = cookies.previousURL || "/";
 
-  // Log the requested URL and authentication status
-  console.log("Previous URL:", previousURL);
-  console.log("Is Authenticated:", isAuthenticated);
-
   // Check if this request has already been processed by adding a custom header
   if (req.headers["x-auth-checked"]) {
     // If the header is present, serve the requested page directly
@@ -28,14 +24,12 @@ module.exports = (req, res) => {
 
   // If the user is not authenticated and tries to access a protected page, redirect to login
   if (!isAuthenticated && !loginPaths.includes(previousURL)) {
-    console.log("User not authenticated, redirecting to /screens/login.html");
     res.writeHead(302, { Location: "/screens/login.html" });
     return res.end();
   }
 
   // If the user is authenticated and tries to access login or register pages, redirect them to the intended homepage or current page
   if (isAuthenticated && loginPaths.includes(previousURL)) {
-    console.log("User already authenticated, redirecting to /");
     res.writeHead(302, { Location: "/", "x-auth-checked": "true" });
     return res.end();
   }

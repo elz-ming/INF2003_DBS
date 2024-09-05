@@ -1,7 +1,5 @@
 const cookie = require("cookie");
 
-console.log("logging out");
-
 module.exports = async (req, res) => {
   if (req.method === "POST") {
     // Clear the auth cookie by setting it with a past expiry date
