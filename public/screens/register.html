@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Website</title>
     <link rel="stylesheet" href="../css/styles.css" />
-    <link rel="stylesheet" href="../css/signup.css" />
+    <link rel="stylesheet" href="../css/register.css" />
   </head>
   <body>
     <div id="background"></div>
     <main>
-      <div class="signup-container">
+      <div class="register-container">
         <h2>Sign Up</h2>
-        <form id="signup-form" method="POST" action="/api/signup">
+        <form id="register-form" method="POST" action="/api/register">
           <label for="name">Name:</label>
           <input type="text" id="name" name="name" required />
 
@@ -30,12 +30,13 @@
             required
           />
 
-          <button type="submit">Sign Up</button>
+          <button type="submit">Register</button>
 
           <p id="error-message" style="color: red"></p>
         </form>
       </div>
     </main>
     <script src="/js/script.js"></script>
+    <script src="/js/auth.js"></script>
   </body>
 </html>
