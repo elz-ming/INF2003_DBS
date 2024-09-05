@@ -1,5 +1,5 @@
-// api/signup.js
 const bcrypt = require("bcrypt"); // To hash passwords
+const cookie = require("cookie");
 const db = require("../db"); // Your database connection
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
       console.log(confirmPassword);
       return res.status(400).send(`
         <p>All fields are required.</p>
-        <a href="/screens/signup.html">Go back to the sign-up page</a>
+        <a href="/screens/register.html">Go back to the sign-up page</a>
       `);
     }
 
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(400).send(`
         <p>All fields are required.</p>
-        <a href="/screens/signup.html">Go back to the sign-up page</a>
+        <a href="/screens/register.html">Go back to the sign-up page</a>
       `);
     }
 
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
       if (existingUser.rows.length > 0) {
         return res.status(409).send(`
           <p>Email already registered.</p>
-          <a href="/screens/signup.html">Go back to the sign-up page</a>
+          <a href="/screens/register.html">Go back to the sign-up page</a>
         `);
       }
 
@@ -46,10 +46,14 @@ module.exports = async (req, res) => {
         [name, email, hashedPassword]
       );
 
-      // Set the token in a cookie or respond with the token
+      // Set the authentication cookie
       res.setHeader(
         "Set-Cookie",
-        "isLoggedIn=true; HttpOnly; Path=/; Max-Age=3600; SameSite=Lax"
+        cookie.serialize("auth", true, {
+          httpOnly: true,
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+          path: "/",
+        })
       );
 
       // Redirect to index.html after successful registration
@@ -59,7 +63,7 @@ module.exports = async (req, res) => {
       console.error("Error during sign-up:", error);
       res.status(500).send(`
         <p>Server error. Please try again later.</p>
-        <a href="/screens/signup.html">Go back to the sign-up page</a>
+        <a href="/screens/register.html">Go back to the sign-up page</a>
       `);
     }
   } else {
