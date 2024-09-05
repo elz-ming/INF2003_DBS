@@ -4,7 +4,7 @@ main {
   align-items: center;
 }
 
-.signup-container {
+.register-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,23 +12,23 @@ main {
   border-radius: 8px;
 }
 
-.signup-container h2 {
+.register-container h2 {
   font-size: 12rem;
   margin-bottom: 20px;
 }
 
-.signup-container #signup-form {
+.register-container #register-form {
   width: 100%;
 }
 
-.signup-container label {
+.register-container label {
   font-size: 4rem;
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
-.signup-container input {
+.register-container input {
   width: 100%;
   border: none;
   padding: 0;
@@ -39,7 +39,7 @@ main {
   font-size: 3rem;
 }
 
-.signup-container button {
+.register-container button {
   width: 100%;
   border: none;
   padding: 0;
@@ -53,6 +53,6 @@ main {
   transition: background-color 0.3s;
 }
 
-.signup-container button:hover {
+.register-container button:hover {
   background-color: #4a64d8;
 }
