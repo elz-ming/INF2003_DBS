@@ -9,16 +9,15 @@
   </head>
   <body>
     <div id="background"></div>
+    <header id="header"></header>
     <main>
       <div class="login-container">
         <h2>Log In</h2>
         <form id="login-form" method="POST" action="/api/login">
           <label for="email">Email:</label>
           <input type="email" id="email" name="email" required />
-
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required />
-
           <button type="submit">Login</button>
 
           <p id="error-message" style="color: red"></p>
@@ -29,7 +28,7 @@
         </p>
       </div>
     </main>
+    <footer id="footer"></footer>
     <script src="/js/script.js"></script>
-    <script src="/js/auth.js"></script>
   </body>
 </html>
