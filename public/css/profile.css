@@ -1,0 +1,86 @@
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+h2 {
+  font-size: 6rem;
+}
+
+#profile {
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: none;
+}
+
+#profile-picture {
+  width: 200px;
+  height: 200px;
+  background-color: #d9d9d9;
+  border-radius: 50%;
+}
+
+#profile h2 {
+  text-transform: uppercase;
+}
+
+#profile-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  border-radius: 20px;
+  background-color: #d0cd94;
+  font-size: 4rem;
+}
+
+#wallet-balance-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  font-size: 12rem;
+}
+
+#wallet-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  gap: 8px;
+}
+
+#wallet-buttons .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+  border-radius: 10px;
+}
+
+#deposit {
+  background-color: #19a838;
+}
+
+#withdraw {
+  background-color: #cb1b1b;
+}
+
+#portfolio {
+  height: 400px;
+}

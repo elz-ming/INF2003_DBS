@@ -5,13 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Website</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/profile.css" />
   </head>
   <body>
     <div id="background"></div>
     <header id="header"></header>
-    <main></main>
+    <main>
+      <section id="profile">
+        <div id="profile-picture"></div>
+        <h2 id="profile-name">Name</h1>
+        <div id="profile-button">
+          Edit Profile
+        </div>
+      </section>
+      <section id="wallet">
+        <h2>Wallet Balance</h2>
+        <div id="wallet-balance-container">
+          <p id="wallet-balance">$0.00</p>
+        </div>
+        <div id="wallet-buttons">
+          <div id="deposit" class="button">Deposit</div>
+          <div id="withdraw" class="button">Withdraw</div>
+        </div>
+      </section>
+
+      <section id="portfolio">
+        <h2>Portfolio</h2>
+      </section>
+
+      <section id="test">
+        <h2>Portfolio</h2>
+      </section>
+      
+    </main>
     <footer id="footer"></footer>
 
     <script src="/js/script.js"></script>
+    <script src="/js/profile.js"></script>
   </body>
 </html>
