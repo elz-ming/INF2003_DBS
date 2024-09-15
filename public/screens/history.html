@@ -5,13 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Website</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/history.css" />
   </head>
   <body>
     <div id="background"></div>
     <header id="header"></header>
-    <main></main>
+    <main>
+      <h2>Transactions</h2>
+      <div class="filter-section">
+        <div class="dropdown">
+          <button class="dropdown-button">Select Types</button>
+          <div class="dropdown-content" id="typeDropdown">
+            <label><input type="checkbox" value="Buy" /> Buy</label>
+            <label><input type="checkbox" value="Sell" /> Sell</label>
+            <label><input type="checkbox" value="Withdrawal" /> Withdraw</label>
+            <label><input type="checkbox" value="Deposit" /> Deposit</label>
+            <label><button id="applyFilters">Apply Filters</button></label>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <button id="sortButton" class="dropdown-button">Descending</button>
+        </div>
+      </div>
+      <div class="container" id="transactionHistory"></div>
+    </main>
     <footer id="footer"></footer>
 
+    <script src="/js/history.js"></script>
     <script src="/js/script.js"></script>
   </body>
 </html>
