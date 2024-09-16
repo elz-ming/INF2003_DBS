@@ -8,3 +8,22 @@ async function fetchData() {
     console.error("Error fetching data:", error);
   }
 }
+
+// sentimentAnalysis function to fetch sentiment data
+function sentimentAnalysis() {
+  fetch('/api/sentimentAPICall') 
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById('data').textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(error => {
+      console.error('Error fetching sentiment data:', error);
+    });
+}
+
+
