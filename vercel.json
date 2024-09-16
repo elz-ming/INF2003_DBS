@@ -1,4 +1,10 @@
 {
   "version": 2,
-  "routes": []
+  "routes": [],
+  "crons": [
+    {
+      "path": "/api/cronTest",
+      "schedule": "*/1 * * * *"
+    }
+  ]
 }
