@@ -5,13 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Website</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/profile.css" />
   </head>
   <body>
     <div id="background"></div>
     <header id="header"></header>
-    <main></main>
+    <main>
+      <section id="profile">
+        <div id="profile-picture"></div>
+        <h2 id="profile-name">Name</h2>
+        <div id="profile-button">Edit Profile</div>
+      </section>
+      <section id="wallet">
+        <h2>Wallet Balance</h2>
+        <div id="wallet-balance-container">
+          <p id="wallet-balance">$0.00</p>
+        </div>
+        <div id="wallet-buttons">
+          <button id="deposit" class="bg-green">Deposit</button>
+          <button id="withdraw" class="bg-red">Withdraw</button>
+        </div>
+      </section>
+
+      <section id="portfolio">
+        <h2>Portfolio</h2>
+      </section>
+
+      <div id="modal">
+        <div id="modal-backdrop"></div>
+        <div id="modal-content">
+          <div id="modal-title">
+            <h2>Balance : <span id="modal-balance"></span></h2>
+            <svg
+              id="modal-close"
+              width="24"
+              height="25"
+              viewBox="0 0 24 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 10.8032L3.51479 2.31799L1.81799 4.01479L10.3032 12.5L1.81799 20.9852L3.51479 22.682L12 14.1968L20.4852 22.682L22.182 20.9852L13.6968 12.5L22.182 4.01479L20.4852 2.31799L12 10.8032Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <div id="modal-input">
+            <input
+              id="amount-input"
+              type="number"
+              placeholder="Enter amount"
+              min="0"
+            />
+          </div>
+          <div id="modal-button">
+            <button id="confirm-button">Deposit</button>
+          </div>
+        </div>
+      </div>
+    </main>
     <footer id="footer"></footer>
 
     <script src="/js/script.js"></script>
+    <script src="/js/profile.js"></script>
   </body>
 </html>
