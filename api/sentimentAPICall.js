@@ -25,66 +25,87 @@ const ticker_codes = {
     20: "PG"
 };
 
+function isMarketDay(date) {
+    const day = date.getDay();
+    // Check if it's Saturday (6) or Sunday (0)
+    return day !== 6 && day !== 0;
+}
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export default async function handler(req, res) {
-  const promises = [];
+    const today = new Date();
+    const formattedDate = formatDate(today);
 
-  for (const [key, ticker] of Object.entries(ticker_codes)) {
-    const options = {
-      method: 'GET',
-      hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
-      port: null,
-      path: `/${ticker}?dateTo=2024-09-02&dateFrom=2024-09-02`,
-      headers: {
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY, // this one will affect zw and i because we using differnt api keys
-        'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
-      }
-    };
+    // Check if today is a market day
+    if (!isMarketDay(today)) {
+        return res.status(400).json({ error: 'Today is not a market day' });
+    }
 
-    const promise = new Promise((resolve, reject) => {
-      const reqSentiment = http.request(options, async (response) => {
-        const chunks = [];
+    const promises = [];
 
-        response.on('data', (chunk) => {
-          chunks.push(chunk);
-        });
-
-        response.on('end', async () => {
-          try {
-            const body = Buffer.concat(chunks);
-            const data = JSON.parse(body.toString());
-
-            if (data.sentiments && data.sentiments.length > 0) {
-              for (const sentiment of data.sentiments) {
-                const sentimentValue = sentiment.sentimentValue;
-                const sentimentDate = sentiment.date;
-
-                // this will help to insert the json data into the database, the insertSentimentData function is defined in the insert.js
-                await insertSentimentData(ticker, sentimentDate, sentimentValue);
-              }
+    for (const [key, ticker] of Object.entries(ticker_codes)) {
+        const options = {
+            method: 'GET',
+            hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
+            port: null,
+            path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
+            headers: {
+                'x-rapidapi-key': process.env.RAPIDAPI_KEY, // this one will affect zw and i because we using differnt api keys
+                'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
             }
+        };
 
-            resolve(data);
-          } catch (err) {
-            reject(err);
-          }
+        const promise = new Promise((resolve, reject) => {
+            const reqSentiment = http.request(options, async (response) => {
+                const chunks = [];
+
+                response.on('data', (chunk) => {
+                    chunks.push(chunk);
+                });
+
+                response.on('end', async () => {
+                    try {
+                        const body = Buffer.concat(chunks);
+                        const data = JSON.parse(body.toString());
+
+                        if (data.sentiments && data.sentiments.length > 0) {
+                            for (const sentiment of data.sentiments) {
+                                const sentimentValue = sentiment.sentimentValue;
+                                const sentimentDate = sentiment.date;
+
+                                // this will help to insert the json data into the database, the insertSentimentData function is defined in the insert.js
+                                await insertSentimentData(ticker, sentimentDate, sentimentValue);
+                            }
+                        }
+
+                        resolve(data);
+                    } catch (err) {
+                        reject(err);
+                    }
+                });
+            });
+
+            reqSentiment.on('error', (error) => {
+                reject(error);
+            });
+
+            reqSentiment.end();
         });
-      });
 
-      reqSentiment.on('error', (error) => {
-        reject(error);
-      });
+        promises.push(promise);
+    }
 
-      reqSentiment.end();
-    });
-
-    promises.push(promise);
-  }
-
-  Promise.all(promises)
-    .then((responses) => {
-      res.status(200).json(responses);
-    })
-    .catch((error) => {
-      res.status(500).json({ error: error.message });
-    });
+    Promise.all(promises)
+        .then((responses) => {
+            res.status(200).json(responses);
+        })
+        .catch((error) => {
+            res.status(500).json({ error: error.message });
+        });
 }
