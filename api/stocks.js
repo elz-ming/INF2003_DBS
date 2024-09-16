@@ -3,11 +3,9 @@ require('dotenv').config();
 
 // PostgreSQL connection setup
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false // For cloud-hosted PostgreSQL services, remove this for local connections
-  },
-});
+    connectionString: process.env.POSTGRES_URL,
+    ssl: false // Disable SSL for local development or servers that don't support SSL
+  });
 
 // Vercel API route
 export default async function handler(req, res) {
