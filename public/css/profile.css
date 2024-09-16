@@ -14,6 +14,22 @@ h2 {
   font-size: 6rem;
 }
 
+.red {
+  color: #cb1b1b;
+}
+
+.bg-red {
+  background-color: #cb1b1b;
+}
+
+.green {
+  color: #19a838;
+}
+
+.bg-green {
+  background-color: #19a838;
+}
+
 #profile {
   align-items: center;
   gap: 8px;
@@ -62,7 +78,7 @@ h2 {
   gap: 8px;
 }
 
-#wallet-buttons .button {
+#wallet-buttons button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,16 +87,116 @@ h2 {
   padding: 8px;
   font-size: 6rem;
   border-radius: 10px;
-}
-
-#deposit {
-  background-color: #19a838;
-}
-
-#withdraw {
-  background-color: #cb1b1b;
+  color: white;
 }
 
 #portfolio {
-  height: 400px;
+  height: 800px;
+}
+
+#modal {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+#modal-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 4;
+}
+
+#modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: 6;
+  margin: 0 16px;
+}
+
+@media (min-width: 769px) {
+  #modal-content {
+    width: 361px;
+    margin: 0;
+  }
+}
+
+#modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+}
+
+#modal-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+}
+
+#amount-input {
+  width: 100%;
+  height: 56px;
+  font-size: 12rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+#amount-input.green {
+  color: #19a838;
+  border: 1px solid #19a838;
+}
+
+#amount-input.red {
+  color: #cb1b1b;
+  border: 1px solid #cb1b1b;
+}
+
+#modal-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+}
+
+#confirm-button {
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+#confirm-button.green {
+  color: #19a838;
+  box-shadow: 0 4px 4px #19a838;
+}
+
+#confirm-button.red {
+  color: #cb1b1b;
+  box-shadow: 0 4px 4px #cb1b1b;
 }
