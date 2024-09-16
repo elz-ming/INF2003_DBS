@@ -19,15 +19,24 @@ html {
   color: white; /* Set all text color to white */
 }
 
-body {
-  width: 100%;
-  height: 100%;
-}
-
+body,
 header,
 main,
 footer {
   width: 100%;
+}
+
+@media (min-width: 769px) {
+  body,
+  header,
+  main,
+  footer {
+    width: 393px;
+  }
+}
+
+body {
+  height: 100%;
 }
 
 header,
@@ -37,6 +46,7 @@ footer {
   left: 0;
   right: 0;
   z-index: 1;
+  margin: 0 auto;
 }
 
 header {
@@ -54,6 +64,12 @@ main {
   margin-top: 10vh;
   padding: 16px;
   gap: 16px;
+}
+
+@media (min-width: 769px) {
+  main {
+    margin-top: 85.2px;
+  }
 }
 
 nav {
@@ -108,35 +124,20 @@ nav li.active a {
   color: #9245de; /* Active state text color */
 }
 
-#background {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: -5;
-}
-
-@media (min-width: 769px) {
-  body {
-    width: 393px;
-    height: 852px;
-  }
-
-  main {
-    margin-top: 85.2px;
-    margin-bottom: 85.2px;
-  }
-
-  #background {
-    width: 393px;
-    height: 852px;
-  }
-}
-
 #background-black,
 #background-purple {
   width: 100%;
   height: 100%;
-  position: absolute;
+  position: fixed;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  #background-black,
+  #background-purple {
+    width: 393px;
+    height: 100vh;
+  }
 }
 
 /* Apply the outer gradient */
