@@ -1,12 +1,15 @@
+require("dotenv").config(); // Ensure this is at the top to load .env variables
+
+// Log the POSTGRES_URL to check if it's being loaded correctly
+console.log("Postgres URL:", process.env.POSTGRES_URL);
+
 const https = require('https');
 const { Pool } = require('pg');
 
 // PostgreSQL connection setup
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL, // Ensure this is set in your .env file or Vercel environment
-  ssl: {
-    rejectUnauthorized: false, // Required for some cloud-hosted PostgreSQL services like Heroku
-  },
+  connectionString: process.env.POSTGRES_URL, // Using the environment variable for connection
+  ssl: false, // Disable SSL for local development
 });
 
 // API call options
@@ -62,14 +65,20 @@ const req = https.request(options, (res) => {
       // Parse the response body as JSON
       const parsedData = JSON.parse(body);
 
-      // Prepare data for insertion into PostgreSQL
+      // Log the parsed API response to verify the data
+      console.log('API Response:', parsedData);
+
+      // Prepare data for insertion into PostgreSQL by extracting the raw values
       const esgData = {
-        symbol: parsedData.symbol || 'AAPL',
-        totalEsg: parsedData.totalEsg || null,
-        environmentScore: parsedData.environmentScore || null,
-        socialScore: parsedData.socialScore || null,
-        governanceScore: parsedData.governanceScore || null,
+        symbol: 'AAPL', // Since the symbol is not in the API response, we set it manually
+        totalEsg: parsedData.totalEsg?.raw || null,
+        environmentScore: parsedData.environmentScore?.raw || null,
+        socialScore: parsedData.socialScore?.raw || null,
+        governanceScore: parsedData.governanceScore?.raw || null,
       };
+
+      // Log the esgData object to check if it's being populated correctly
+      console.log('Prepared ESG Data for Insertion:', esgData);
 
       // Insert data into PostgreSQL
       await insertESGData(esgData);
