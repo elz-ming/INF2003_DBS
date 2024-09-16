@@ -4,6 +4,8 @@ const cookie = require("cookie");
 const db = require("../db"); // Your database connection
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
 module.exports = async (req, res) => {
   if (req.method === "POST") {
     const { name, email, password, confirmPassword } = req.body;
@@ -47,9 +49,13 @@ module.exports = async (req, res) => {
         [name, email, hashedPassword]
       );
 
-      const token = jwt.sign({ userId: insertResult.rows[0].id }, SECRET_KEY, {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign(
+        { userId: insertResult.rows[0].id },
+        JWT_SECRET_KEY,
+        {
+          expiresIn: "1h",
+        }
+      );
 
       // Set the authentication cookie
       res.setHeader(
