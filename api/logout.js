@@ -5,10 +5,11 @@ module.exports = async (req, res) => {
     // Clear the auth cookie by setting it with a past expiry date
     res.setHeader(
       "Set-Cookie",
-      cookie.serialize("auth", false, {
+      cookie.serialize("authToken", "", {
         httpOnly: true, // Keep it secure from client-side access
         expires: new Date(0), // Set the expiry date to the past to remove the cookie
         path: "/", // Ensure the cookie path is correct
+        sameSite: "Strict", // Improve security by restricting cookie sharing
       })
     );
 

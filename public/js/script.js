@@ -102,6 +102,7 @@ async function loadUniqueComponents(components) {
     }
   }
 }
+
 function setActiveNavItem() {
   const currentPath = window.location.pathname;
   const normalizedPath = currentPath === "/" ? "/index.html" : currentPath;
