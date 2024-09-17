@@ -57,28 +57,66 @@ footer {
 }
 
 header {
+  display: flex;
   top: 0;
+  background: linear-gradient(
+    to right,
+    rgba(146, 69, 222, 1),
+    rgba(95, 126, 255, 1)
+  );
 }
 
 footer {
   bottom: 0;
+  background-color: #000000;
 }
 
 main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10vh;
-  margin-bottom: 10vh;
+  margin-top: calc(10vh + 16px);
+  margin-bottom: calc(10vh + 16px);
   padding: 16px;
   gap: 16px;
 }
 
 @media (min-width: 769px) {
   main {
-    margin-top: 85.2px;
-    margin-bottom: 85.2px;
+    margin-top: calc(85.2px + 16px);
+    margin-bottom: calc(85.2px + 16px);
   }
+}
+
+header #left,
+header #middle,
+header #right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+header #middle {
+  flex: 1;
+}
+
+header #left,
+header #right {
+  display: none;
+  width: 10vh;
+}
+
+header h1 {
+  font-size: 10rem;
+  text-align: center;
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+header button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 nav {
@@ -151,7 +189,7 @@ nav li.active a {
 }
 
 /* Apply the outer gradient */
-#background-black {
+#background-purple {
   background: linear-gradient(
     to right,
     rgba(146, 69, 222, 1),
@@ -161,7 +199,11 @@ nav li.active a {
 }
 
 /* Apply the inner gradient */
-#background-purple {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+#background-black {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 10%,
+    rgba(0, 0, 0, 1) 90%
+  );
   z-index: -1;
 }
