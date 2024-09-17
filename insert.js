@@ -15,3 +15,23 @@ const insertSentimentData = async (ticker, date, sentimentValue) => {
 };
 
 module.exports = insertSentimentData;
+
+// Function to insert stock data into the database
+const insertStockData = async (ticker, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, date, open, high, low, close, volume) => {
+  try {
+    await db.query(
+      `INSERT INTO stockData 
+      (ticker, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
+      regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, date, open, high, low, close, volume) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+      [ticker, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
+      regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, date, open, high, low, close, volume]
+    );
+    console.log(`Inserted stock data for ${ticker}`);
+  } catch (err) {
+    console.error('Error inserting stock data:', err);
+    throw err;
+  }
+};
+
+module.exports = insertStockData;
