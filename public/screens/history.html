@@ -11,27 +11,51 @@
     <div id="background"></div>
     <header id="header"></header>
     <main>
-      <h2>Transactions</h2>
       <div class="filter-section">
-        <div class="dropdown">
-          <button class="dropdown-button">Select Types</button>
-          <div class="dropdown-content" id="typeDropdown">
-            <label><input type="checkbox" value="Buy" /> Buy</label>
-            <label><input type="checkbox" value="Sell" /> Sell</label>
-            <label><input type="checkbox" value="Withdrawal" /> Withdraw</label>
-            <label><input type="checkbox" value="Deposit" /> Deposit</label>
-            <label><button id="applyFilters">Apply Filters</button></label>
-          </div>
+        <!-- Row 1: Type Checkboxes -->
+        <div class="filter-row">
+          <span class="filter-header">Type:</span>
+          <label><input type="checkbox" value="Buy" /> Buy</label>
+          <label><input type="checkbox" value="Sell" /> Sell</label>
+          <label><input type="checkbox" value="Withdrawal" /> Withdrawal</label>
+          <label><input type="checkbox" value="Deposit" /> Deposit</label>
         </div>
 
-        <div class="dropdown">
-          <button id="sortButton" class="dropdown-button">Descending</button>
+        <!-- Row 2: Date Range -->
+        <div class="filter-row">
+          <span class="filter-header">Date:</span>
+          <input type="date" id="startDate" />
+          <span class="filter-separator"> -</span>
+          <input type="date" id="endDate" />
+        </div>
+
+        <!-- Row 4: Apply Filters Button -->
+        <div class="filter-row">
+          <button id="applyFilters">Apply Filters</button>
+        </div>
+
+        <div class="sort-buttons">
+          <span class="filter-header">Sort By:</span>
+          <button id="sortDateButton">Latest</button>
+          <button id="sortAmountButton">Highest</button>
         </div>
       </div>
+
+      <!-- Row 3: Sort Buttons -->
+      <div class="filter-row"></div>
+
       <div class="container" id="transactionHistory"></div>
     </main>
     <footer id="footer"></footer>
 
+    <div id="popup" class="popup">
+      <div class="popup-content" id="popupContent">
+        <h3 class="type-header transaction-type-buy">Buy</h3>
+        <!-- Adjust class based on transaction type -->
+        <!-- Other popup details -->
+        <button id="closePopup" class="close-button">Close</button>
+      </div>
+    </div>
     <script src="/js/history.js"></script>
     <script src="/js/script.js"></script>
   </body>

@@ -8,18 +8,21 @@ body {
   margin: 0;
   padding: 0;
 }
+#header {
+  margin-bottom: 10px; /* Ensure margin is consistent */
+}
+
 .container {
   width: 90%;
   margin: 0 auto;
-  padding-top: 20px;
+  padding-top: 0px;
 }
-.date-group {
-  margin-bottom: 20px;
-}
+
 .date-header {
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 14.4px; /* Reduced from 18px */
+  margin-bottom: 8px; /* Reduced from 10px */
 }
+
 .transaction-card {
   display: flex;
   justify-content: space-between;
@@ -29,78 +32,183 @@ body {
   margin-bottom: 10px;
   border-radius: 10px;
 }
+
 .transaction-card .details {
   display: flex;
   flex-direction: column;
 }
+
 .transaction-card .details .ticker {
   font-size: 18px;
   font-weight: bold;
   color: #aaa;
 }
+
 .transaction-card .details .type {
   font-size: 12px;
   font-weight: bold;
 }
+
 .transaction-card .amount {
   font-size: 18px;
 }
+
 .transaction-card.deposit .amount {
   color: #00ccff;
 }
+
 .transaction-card.withdrawal .amount {
   color: #ff6666;
 }
+
 .transaction-card.sell .amount {
   color: #00ff00;
 }
+
 .transaction-card.buy .amount {
   color: #ff3333;
 }
+
 .transaction-card .icon {
   margin-right: 10px;
 }
+
 .transaction-card .icon img {
   width: 20px;
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
+.filter-section {
+  text-align: center; /* Center the content */
 }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+.filter-row {
+  margin-bottom: 8px; /* Reduced from 16px */
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Align items vertically */
 }
 
-.dropdown-content label {
-  display: block;
-  padding: 8px 16px;
+.filter-header {
+  font-weight: bold;
+  font-size: 18.4px; /* Reduced from 23px */
+  margin-right: 8px; /* Reduced from 12px */
+}
+
+.filter-separator {
+  font-size: 18.4px; /* Reduced from 23px */
+  padding-left: 8px;
+  margin-right: 8px; /* Reduced from 12px */
+}
+
+.filter-row label {
+  margin-right: 8px; /* Reduced from 12px */
+  font-size: 13.6px; /* Reduced from 17px */
+}
+
+.filter-row input[type="checkbox"] {
+  width: 19.2px; /* Reduced from 24px */
+  height: 19.2px; /* Reduced from 24px */
+  margin-right: 4px; /* Reduced from 5px */
+}
+
+.filter-row input[type="date"] {
+  height: 27.2px; /* Reduced from 34px */
+  font-size: 13.6px; /* Reduced from 17px */
+}
+
+.filter-row button {
+  margin-right: 6px; /* Reduced from 8px */
+}
+
+#sortDateButton,
+#sortAmountButton,
+#applyFilters {
+  padding: 2px; /* Reduced from 7.2px */
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Reduced from 5px */
   cursor: pointer;
 }
 
-.dropdown-content label:hover {
-  background-color: #f1f1f1;
+#sortDateButton:hover,
+#sortAmountButton:hover,
+#applyFilters:hover {
+  background-color: #f0f0f0;
 }
 
-.show {
-  display: block;
+.sort-buttons {
+  display: flex;
+  gap: 10px; /* Adjust this value for the desired gap between buttons */
+  justify-content: center; /* Center buttons horizontally */
 }
 
-.dropdown-button {
-  background-color: #4caf50;
+#sortDateButton:hover,
+#sortAmountButton:hover {
+  background-color: #f0f0f0;
+}
+
+.popup {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 30%; /* Position higher up from the top */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #2a2a3e;
+  border-radius: 20px; /* Rounded corners for the entire popup */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 80vw; /* Make it narrower than the full screen width */
+  max-width: 360px; /* Adjust maximum width */
+  height: 43vh; /* Adjust height as needed */
+  max-height: 80vh; /* Limit maximum height */
+  overflow-y: auto; /* Add scroll if content overflows */
+  padding: 20px; /* Padding inside the popup */
+  text-align: center; /* Center-align text */
+}
+
+/* Popup Header Styling */
+.popup h3 {
+  margin-top: 0;
+  font-size: 24px; /* Adjust font size for header */
+  color: #fff; /* Default header color */
+}
+
+.popup-row {
+  margin-bottom: 10px;
+  font-size: 18px; /* Adjust font size as needed */
+}
+
+/* Popup Header Color Coding */
+.transaction-type-withdrawal h3 {
+  color: #ff6666; /* Color for withdrawal transactions */
+}
+
+.transaction-type-deposit h3 {
+  color: #00ccff; /* Color for deposit transactions */
+}
+
+.transaction-type-buy h3 {
+  color: #ff3333; /* Color for buy transactions */
+}
+
+.transaction-type-sell h3 {
+  color: #00ff00; /* Color for sell transactions */
+}
+
+/* Close Button Styling */
+.close-button {
+  background-color: #f44336;
   color: white;
-  padding: 10px;
-  font-size: 16px;
   border: none;
+  padding: 15px 20px;
+  font-size: 18px;
   cursor: pointer;
+  position: absolute; /* Position at the bottom */
+  bottom: 20px; /* Space from the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 0 0 20px 20px; /* Rounded corners at the bottom */
 }
 
-.dropdown-button:hover {
-  background-color: #45a049;
+.close-button:hover {
+  background-color: #d32f2f;
 }
