@@ -29,15 +29,18 @@ function sentimentAnalysis() {
     });
 }
 
-async function fetchStockData() {
-  console.log("Fetch Stock Data button clicked");
+// Function to fetch stock news data from /api/stockNewsAPI
+async function fetchStockNews() {
+  console.log("Fetch Stock News button clicked");
   try {
-    const response = await fetch("/api/stockInfoAPI");
+    const response = await fetch("/api/stockNewsAPI");
     if (!response.ok) throw new Error("Network response was not ok");
     const data = await response.json();
+
+    // Display the top 10 articles in the HTML
     document.getElementById("data").textContent = JSON.stringify(data, null, 2);
   } catch (error) {
-    console.error("Error fetching stock data:", error);
+    console.error("Error fetching stock news data:", error);
   }
 }
 
