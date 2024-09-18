@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
         SELECT id, amount, order_executed, transaction_type, price, quantity, ticker_code, stock_name, bank
         FROM (
           SELECT st.id, st.amount, st.order_executed, st.type AS transaction_type, st.price, st.quantity, 
-                 s.ticker_code, s.name AS stock_name, NULL AS bank
+                 s.ticker AS ticker_code, s.longname AS stock_name, NULL AS bank
           FROM stock_transactions st
           LEFT JOIN stocks s ON st.stock_id = s.id
           WHERE st.user_id = $1
