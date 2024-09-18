@@ -10,7 +10,6 @@
 //       headers: {
 //         'x-rapidapi-key': 'c3dd0c1e20mshd942dc8a8d040e9p10f7cbjsnfa66d893170a',
 //         'x-rapidapi-host': 'yahoo-finance160.p.rapidapi.com',
-//         'Content-Type': 'application/json',
 //       },
 //     };
 
