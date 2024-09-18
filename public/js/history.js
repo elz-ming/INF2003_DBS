@@ -136,16 +136,16 @@ function displayPopup(transaction) {
     transaction.transaction_type.toLowerCase() === "deposit"
   ) {
     content += `
-    <div class="popup-row"><strong>Amount:</strong> $${transaction.amount.toFixed(
+    <div class="modal-row"><strong>Amount:</strong> $${transaction.amount.toFixed(
       2
     )}</div>
-    <div class="popup-row"><strong>Bank:</strong> ${
+    <div class="modal-row"><strong>Bank:</strong> ${
       transaction.bank || "N/A"
     }</div>
-        <div class="popup-row"><strong>Date:</strong> ${new Date(
+        <div class="modal-row"><strong>Date:</strong> ${new Date(
           transaction.order_executed
         ).toLocaleDateString()}</div>
-    <div class="popup-row"><strong>Time:</strong> ${new Date(
+    <div class="modal-row"><strong>Time:</strong> ${new Date(
       transaction.order_executed
     ).toLocaleTimeString()}</div>
     `;
@@ -154,22 +154,22 @@ function displayPopup(transaction) {
     transaction.transaction_type.toLowerCase() === "sell"
   ) {
     content += `
-      <div class="popup-row"><strong>Stock Name:</strong> ${
+      <div class="modal-row"><strong>Stock Name:</strong> ${
         transaction.stock_name || "N/A"
       }</div>
-           <div class="popup-row"><strong>Stock Price:</strong> $${transaction.price.toFixed(
+           <div class="modal-row"><strong>Stock Price:</strong> $${transaction.price.toFixed(
              2
            )}</div>
-      <div class="popup-row"><strong>Quantity:</strong> ${
+      <div class="modal-row"><strong>Quantity:</strong> ${
         transaction.quantity
       }</div>
-      <div class="popup-row"><strong>Amount:</strong> $${transaction.amount.toFixed(
+      <div class="modal-row"><strong>Amount:</strong> $${transaction.amount.toFixed(
         2
       )}</div>
-      <div class="popup-row"><strong>Date:</strong> ${new Date(
+      <div class="modal-row"><strong>Date:</strong> ${new Date(
         transaction.order_executed
       ).toLocaleDateString()}</div>
-      <div class="popup-row"><strong>Time:</strong> ${new Date(
+      <div class="modal-row"><strong>Time:</strong> ${new Date(
         transaction.order_executed
       ).toLocaleTimeString()}</div>
       `;

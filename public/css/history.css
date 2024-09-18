@@ -1,7 +1,7 @@
 section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   width: 100%;
   height: auto;
 }
@@ -90,7 +90,7 @@ h2 {
 .date-header {
   padding: 8px;
   color: #ffffff;
-  background-color: #000000;
+  background-color: #9245de;
   font-size: 4rem; /* Reduced from 18px */
 }
 
@@ -216,8 +216,8 @@ h2 {
   padding: 8px;
 }
 
-.popup-row {
-  color: #000;
+.modal-row {
+  color: #000000;
   font-size: 4rem; /* Adjust font size as needed */
 }
 
