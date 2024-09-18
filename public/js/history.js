@@ -1,3 +1,6 @@
+let selectedDateSortOrder = "latest"; // Default sort order for date
+let selectedAmountSortOrder = "highest"; // Default sort order for amount
+
 async function fetchTransactions(
   selectedTypes = [],
   dateSortOrder = "latest",
@@ -189,68 +192,68 @@ function groupByDate(transactions) {
   }, {});
 }
 
-document.getElementById("applyFilters").addEventListener("click", () => {
-  const dateSortButton = document.getElementById("sortDateButton");
-  const dateSortOrder = dateSortButton.textContent.toLowerCase();
-
-  const amountSortButton = document.getElementById("sortAmountButton");
-  const amountSortOrder = amountSortButton.textContent.toLowerCase();
-
-  const typeFilter = document.querySelectorAll(
-    "#typeDropdown input[type='checkbox']:checked"
-  );
-  const selectedTypes = Array.from(typeFilter).map(
-    (checkbox) => checkbox.value
-  );
-
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
-
-  fetchTransactions(
-    selectedTypes,
-    dateSortOrder,
-    amountSortOrder,
-    startDate,
-    endDate
-  );
-});
-
 document.getElementById("sortDateButton").addEventListener("click", () => {
   const dateButton = document.getElementById("sortDateButton");
   const currentSort = dateButton.textContent.toLowerCase();
-  const newSort = currentSort === "earliest" ? "latest" : "earliest";
-  dateButton.textContent = newSort.charAt(0).toUpperCase() + newSort.slice(1);
-
-  const amountSortButton = document.getElementById("sortAmountButton");
-  const amountSortOrder = amountSortButton.textContent.toLowerCase();
-
-  const typeFilter = document.querySelectorAll(
-    "#typeDropdown input[type='checkbox']:checked"
-  );
-  const selectedTypes = Array.from(typeFilter).map(
-    (checkbox) => checkbox.value
-  );
-
-  fetchTransactions(selectedTypes, newSort, amountSortOrder);
+  selectedDateSortOrder = currentSort === "earliest" ? "latest" : "earliest";
+  dateButton.textContent =
+    selectedDateSortOrder.charAt(0).toUpperCase() +
+    selectedDateSortOrder.slice(1);
 });
 
 document.getElementById("sortAmountButton").addEventListener("click", () => {
   const amountButton = document.getElementById("sortAmountButton");
   const currentSort = amountButton.textContent.toLowerCase();
-  const newSort = currentSort === "lowest" ? "highest" : "lowest";
-  amountButton.textContent = newSort.charAt(0).toUpperCase() + newSort.slice(1);
+  selectedAmountSortOrder = currentSort === "lowest" ? "highest" : "lowest";
+  amountButton.textContent =
+    selectedAmountSortOrder.charAt(0).toUpperCase() +
+    selectedAmountSortOrder.slice(1);
+});
 
-  const dateSortButton = document.getElementById("sortDateButton");
-  const dateSortOrder = dateSortButton.textContent.toLowerCase();
-
+// Apply filters and fetch transactions
+document.getElementById("applyFilters").addEventListener("click", () => {
   const typeFilter = document.querySelectorAll(
-    "#typeDropdown input[type='checkbox']:checked"
+    ".filter-section input[type='checkbox']:checked"
   );
-  const selectedTypes = Array.from(typeFilter).map(
-    (checkbox) => checkbox.value
+  const selectedTypes = Array.from(typeFilter).map((checkbox) =>
+    checkbox.value.toLowerCase()
   );
 
-  fetchTransactions(selectedTypes, dateSortOrder, newSort);
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
+
+  // Fetch transactions with selected types, date sort order, amount sort order, and date range
+  fetchTransactions(
+    selectedTypes,
+    selectedDateSortOrder,
+    selectedAmountSortOrder,
+    startDate,
+    endDate
+  );
+});
+
+// Reset filters and sort options to defaults
+document.getElementById("resetFilters").addEventListener("click", () => {
+  // Reset the sorting order
+  selectedDateSortOrder = "latest";
+  selectedAmountSortOrder = "highest";
+  document.getElementById("sortDateButton").textContent = "Latest";
+  document.getElementById("sortAmountButton").textContent = "Highest";
+
+  // Uncheck all type filters
+  const checkboxes = document.querySelectorAll(
+    ".filter-section input[type='checkbox']"
+  );
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = false;
+  });
+
+  // Clear date range inputs
+  document.getElementById("startDate").value = "";
+  document.getElementById("endDate").value = "";
+
+  // Fetch transactions with default settings (no filters)
+  fetchTransactions();
 });
 
 window.onload = () => {

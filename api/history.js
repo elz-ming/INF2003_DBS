@@ -32,28 +32,31 @@ module.exports = async (req, res) => {
           FROM money_transactions mt
           WHERE mt.user_id = $1
         ) AS combined_transactions
+        WHERE 1 = 1
       `;
 
       const values = [userId];
 
       // Apply date range filter if specified
       if (startDate) {
-        query += ` WHERE order_executed >= $${values.length + 1}`;
+        query += ` AND order_executed >= $${values.length + 1}`;
         values.push(new Date(startDate).toISOString());
       }
 
       if (endDate) {
-        query += ` WHERE order_executed <= $${values.length + 1}`;
+        query += ` AND order_executed <= $${values.length + 1}`;
         values.push(new Date(endDate).toISOString());
       }
 
       // Apply transaction type filter if specified
-      if (types) {
-        const typeArray = types.split(",").map((type) => type.trim());
+      if (types && types.length > 0) {
+        const typeArray = types
+          .split(",")
+          .map((type) => type.trim().toLowerCase());
         const typePlaceholders = typeArray.map(
           (_, index) => `$${values.length + index + 1}`
         );
-        query += ` WHERE transaction_type IN (${typePlaceholders.join(", ")})`;
+        query += ` AND transaction_type IN (${typePlaceholders.join(", ")})`;
         values.push(...typeArray);
       }
 
