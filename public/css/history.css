@@ -1,140 +1,76 @@
-h2 {
-  font-size: 12rem;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  color: #fff;
-  margin: 0;
-  padding: 0;
-}
-#header {
-  margin-bottom: 10px; /* Ensure margin is consistent */
-}
-
-.container {
-  width: 90%;
-  margin: 0 auto;
-  padding-top: 0px;
-}
-
-.date-header {
-  font-size: 14.4px; /* Reduced from 18px */
-  margin-bottom: 8px; /* Reduced from 10px */
-}
-
-.transaction-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #2a2a3e;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-}
-
-.transaction-card .details {
+section {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  height: auto;
 }
 
-.transaction-card .details .ticker {
-  font-size: 18px;
-  font-weight: bold;
-  color: #aaa;
-}
-
-.transaction-card .details .type {
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.transaction-card .amount {
-  font-size: 18px;
-}
-
-.transaction-card.deposit .amount {
-  color: #00ccff;
-}
-
-.transaction-card.withdrawal .amount {
-  color: #ff6666;
-}
-
-.transaction-card.sell .amount {
-  color: #00ff00;
-}
-
-.transaction-card.buy .amount {
-  color: #ff3333;
-}
-
-.transaction-card .icon {
-  margin-right: 10px;
-}
-
-.transaction-card .icon img {
-  width: 20px;
-}
-
-.filter-section {
-  text-align: center; /* Center the content */
+h2 {
+  font-size: 6rem;
 }
 
 .filter-row {
-  margin-bottom: 8px; /* Reduced from 16px */
   display: flex;
-  justify-content: center; /* Center items horizontally */
+  justify-content: space-between; /* Center items horizontally */
   align-items: center; /* Align items vertically */
+}
+
+#filter-set {
+  justify-content: center;
+}
+
+.filter-row .filter-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .filter-header {
   font-weight: bold;
-  font-size: 18.4px; /* Reduced from 23px */
-  margin-right: 8px; /* Reduced from 12px */
+  font-size: 4rem;
 }
 
 .filter-separator {
   font-size: 18.4px; /* Reduced from 23px */
-  padding-left: 8px;
-  margin-right: 8px; /* Reduced from 12px */
 }
 
 .filter-row label {
-  margin-right: 8px; /* Reduced from 12px */
-  font-size: 13.6px; /* Reduced from 17px */
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  gap: 2px;
 }
 
 .filter-row input[type="checkbox"] {
-  width: 19.2px; /* Reduced from 24px */
-  height: 19.2px; /* Reduced from 24px */
-  margin-right: 4px; /* Reduced from 5px */
+  width: 4rem;
+  height: 4rem;
 }
 
 .filter-row input[type="date"] {
-  height: 27.2px; /* Reduced from 34px */
-  font-size: 13.6px; /* Reduced from 17px */
-}
-
-.filter-row button {
-  margin-right: 6px; /* Reduced from 8px */
+  height: 6rem;
+  font-size: 3rem;
+  border: none;
+  border-radius: 4px;
 }
 
 #sortDateButton,
 #sortAmountButton,
 #resetFilters,
 #applyFilters {
-  padding: 2px; /* Reduced from 7.2px */
-  border: 1px solid #ccc;
-  border-radius: 4px; /* Reduced from 5px */
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  background-color: #ffffff;
 }
 
 #sortDateButton:hover,
 #sortAmountButton:hover,
 #resetFilters:hover,
 #applyFilters:hover {
-  background-color: #f0f0f0;
+  color: #ffffff;
+  background-color: #9245de;
 }
 
 .sort-buttons {
@@ -143,40 +79,146 @@ body {
   justify-content: center; /* Center buttons horizontally */
 }
 
-#sortDateButton:hover,
-#sortAmountButton:hover {
-  background-color: #f0f0f0;
+.date-group {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.popup {
-  display: none; /* Hidden by default */
+.date-header {
+  padding: 8px;
+  color: #ffffff;
+  background-color: #000000;
+  font-size: 4rem; /* Reduced from 18px */
+}
+
+.transaction-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #a8a5a5;
+  padding: 8px;
+}
+
+.transaction-card .details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.transaction-card .details .ticker {
+  font-size: 5rem;
+  font-weight: bold;
+}
+
+.transaction-card .details .type {
+  font-size: 3rem;
+}
+
+.transaction-card .amount {
+  font-size: 4rem;
+}
+
+.transaction-card.deposit {
+  color: #19a838;
+}
+
+.transaction-card.withdrawal {
+  color: #cb1b1b;
+}
+
+.transaction-card.sell {
+  color: #ff928a;
+}
+
+.transaction-card.buy {
+  color: #3aaedf;
+}
+
+#modal {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
   position: fixed;
-  top: 30%; /* Position higher up from the top */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #2a2a3e;
-  border-radius: 20px; /* Rounded corners for the entire popup */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  width: 80vw; /* Make it narrower than the full screen width */
-  max-width: 360px; /* Adjust maximum width */
-  height: 43vh; /* Adjust height as needed */
-  max-height: 80vh; /* Limit maximum height */
-  overflow-y: auto; /* Add scroll if content overflows */
-  padding: 20px; /* Padding inside the popup */
-  text-align: center; /* Center-align text */
+  top: 0;
+  left: 0;
+  z-index: 5;
 }
 
-/* Popup Header Styling */
-.popup h3 {
-  margin-top: 0;
-  font-size: 24px; /* Adjust font size for header */
-  color: #fff; /* Default header color */
+#modal-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 4;
+}
+
+#modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: 6;
+  margin: 0 16px;
+}
+
+@media (min-width: 769px) {
+  #modal-content {
+    width: 361px;
+    margin: 0;
+  }
+}
+
+#modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+}
+
+#modal-title.deposit {
+  background-color: #19a838;
+}
+
+#modal-title.withdrawal {
+  background-color: #cb1b1b;
+}
+
+#modal-title.sell {
+  background-color: #ff928a;
+}
+
+#modal-title.buy {
+  background-color: #3aaedf;
+}
+
+#modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  padding: 8px;
 }
 
 .popup-row {
-  margin-bottom: 10px;
-  font-size: 18px; /* Adjust font size as needed */
+  color: #000;
+  font-size: 4rem; /* Adjust font size as needed */
 }
 
 /* Popup Header Color Coding */
@@ -194,23 +236,4 @@ body {
 
 .transaction-type-sell h3 {
   color: #00ff00; /* Color for sell transactions */
-}
-
-/* Close Button Styling */
-.close-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 15px 20px;
-  font-size: 18px;
-  cursor: pointer;
-  position: absolute; /* Position at the bottom */
-  bottom: 20px; /* Space from the bottom */
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 0 0 20px 20px; /* Rounded corners at the bottom */
-}
-
-.close-button:hover {
-  background-color: #d32f2f;
 }

@@ -11,47 +11,68 @@
     <div id="background"></div>
     <header id="header"></header>
     <main>
-      <div class="filter-section">
-        <!-- Row 1: Type Checkboxes -->
+      <section id="filter">
         <div class="filter-row">
           <span class="filter-header">Type:</span>
-          <label><input type="checkbox" value="Buy" /> Buy</label>
-          <label><input type="checkbox" value="Sell" /> Sell</label>
-          <label><input type="checkbox" value="Withdrawal" /> Withdrawal</label>
-          <label><input type="checkbox" value="Deposit" /> Deposit</label>
+          <div class="filter-options">
+            <label><input type="checkbox" value="Buy" />Buy</label>
+            <label><input type="checkbox" value="Sell" />Sell</label>
+            <label
+              ><input type="checkbox" value="Withdrawal" />Withdrawal</label
+            >
+            <label><input type="checkbox" value="Deposit" />Deposit</label>
+          </div>
         </div>
 
-        <!-- Row 2: Date Range -->
         <div class="filter-row">
           <span class="filter-header">Date:</span>
-          <input type="date" id="startDate" />
-          <span class="filter-separator"> -</span>
-          <input type="date" id="endDate" />
+          <div class="filter-options">
+            <input type="date" id="startDate" />
+            <span class="filter-separator">-</span>
+            <input type="date" id="endDate" />
+          </div>
         </div>
 
-        <div class="sort-buttons">
+        <div class="filter-row">
           <span class="filter-header">Sort By:</span>
-          <button id="sortDateButton">Latest</button>
-          <button id="sortAmountButton">Highest</button>
+          <div class="filter-options">
+            <button id="sortDateButton">Latest</button>
+            <button id="sortAmountButton">Highest</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Row 4: Apply Filters Button -->
-      <div class="filter-row">
-        <button id="applyFilters">Apply Filters</button>
-        <button id="resetFilters">Reset Filters</button>
-      </div>
+        <div id="filter-set" class="filter-row">
+          <div class="filter-options">
+            <button id="applyFilters">Filter</button>
+            <button id="resetFilters">Reset</button>
+          </div>
+        </div>
+      </section>
 
-      <div class="container" id="transactionHistory"></div>
+      <section id="transactionHistory"></section>
     </main>
     <footer id="footer"></footer>
 
-    <div id="popup" class="popup">
-      <div class="popup-content" id="popupContent">
-        <h3 class="type-header transaction-type-buy">Buy</h3>
-        <!-- Adjust class based on transaction type -->
-        <!-- Other popup details -->
-        <button id="closePopup" class="close-button">Close</button>
+    <div id="modal">
+      <div id="modal-backdrop"></div>
+      <div id="modal-content">
+        <div id="modal-title">
+          <h2><span id="modal-type"></span></h2>
+          <svg
+            id="modal-close"
+            width="24"
+            height="25"
+            viewBox="0 0 24 25"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 10.8032L3.51479 2.31799L1.81799 4.01479L10.3032 12.5L1.81799 20.9852L3.51479 22.682L12 14.1968L20.4852 22.682L22.182 20.9852L13.6968 12.5L22.182 4.01479L20.4852 2.31799L12 10.8032Z"
+              fill="white"
+            />
+          </svg>
+        </div>
+        <div id="modal-body"></div>
       </div>
     </div>
     <script src="/js/history.js"></script>

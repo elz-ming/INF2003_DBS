@@ -86,8 +86,18 @@ function renderTransactions(transactions) {
         const amount = document.createElement("div");
         amount.classList.add("amount");
         amount.textContent = `$${transaction.amount.toFixed(2)}`;
+
+        const icon = document.createElement("div");
+        icon.classList.add("icon");
+        icon.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.60001 0.800003L4.48001 2L10.4 8L4.48001 14L5.60001 15.2L12.8 8L5.60001 0.800003Z" fill="#a8a5a5"/>
+          </svg>
+        `;
+
         transactionCard.appendChild(details);
         transactionCard.appendChild(amount);
+        transactionCard.appendChild(icon);
 
         transactionCard.addEventListener("click", () => {
           displayPopup(transaction);
@@ -102,19 +112,24 @@ function renderTransactions(transactions) {
 }
 
 function displayPopup(transaction) {
-  const popup = document.getElementById("popup");
-  const popupContent = document.getElementById("popupContent");
+  const modal = document.getElementById("modal");
+  const modalBackdrop = document.getElementById("modal-backdrop");
+  const modalTitle = document.getElementById("modal-title");
+  const modalType = document.getElementById("modal-type");
+  const modalBody = document.getElementById("modal-body");
+  const closeButton = document.getElementById("modal-close");
 
   // Format the transaction type with only the first letter uppercase
   const transactionType =
     transaction.transaction_type.charAt(0).toUpperCase() +
     transaction.transaction_type.slice(1).toLowerCase();
-  const typeClass = `transaction-type-${transaction.transaction_type.toLowerCase()}`;
+  modalType.innerText = `${transactionType}`;
+
+  modalTitle.classList.remove("buy", "sell", "deposit", "withdraw");
+  modalTitle.classList.add(transaction.transaction_type.toLowerCase());
 
   // Generate the content for the popup
-  let content = `
-     <button id="closePopup" class="close-button">Close</button>
-     <h3 class="${typeClass}">${transactionType}</h3>`;
+  let content = ``;
   // Populate popup based on transaction type
   if (
     transaction.transaction_type.toLowerCase() === "withdrawal" ||
@@ -160,18 +175,22 @@ function displayPopup(transaction) {
       `;
   }
 
-  popupContent.innerHTML = content;
-  popup.style.display = "block";
+  modalBody.innerHTML = content;
+  modal.style.display = "flex";
 
-  document
-    .getElementById("closePopup")
-    .removeEventListener("click", closePopup);
-  document.getElementById("closePopup").addEventListener("click", closePopup);
+  if (modalBackdrop) {
+    modalBackdrop.addEventListener("click", closeModal);
+  }
+
+  // Assuming you have a close button in your modal
+  if (closeButton) {
+    closeButton.addEventListener("click", closeModal);
+  }
 }
 
-function closePopup() {
-  const popup = document.getElementById("popup");
-  popup.style.display = "none";
+function closeModal() {
+  const modal = document.getElementById("modal");
+  modal.style.display = "none";
 }
 
 function groupByDate(transactions) {
