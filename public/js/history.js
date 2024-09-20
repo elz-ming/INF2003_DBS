@@ -232,8 +232,9 @@ document.getElementById("sortAmountButton").addEventListener("click", () => {
 // Apply filters and fetch transactions
 document.getElementById("applyFilters").addEventListener("click", () => {
   const typeFilter = document.querySelectorAll(
-    ".filter-section input[type='checkbox']:checked"
+    "#filter input[type='checkbox']:checked"
   );
+
   const selectedTypes = Array.from(typeFilter).map((checkbox) =>
     checkbox.value.toLowerCase()
   );
