@@ -235,8 +235,6 @@ document.getElementById("applyFilters").addEventListener("click", () => {
     "#filter input[type='checkbox']:checked"
   );
 
-  console.log(typeFilter);
-
   const selectedTypes = Array.from(typeFilter).map((checkbox) =>
     checkbox.value.toLowerCase()
   );
