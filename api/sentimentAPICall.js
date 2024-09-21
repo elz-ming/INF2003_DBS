@@ -32,20 +32,10 @@ export default async function handler(req, res) {
         4: "AMZN",
         5: "GOOGL",
         6: "META",
-        7: "BRK.B",
+        7: "TSLA",
         8: "LLY",
         9: "AVGO",
         10: "TSM",
-        11: "TSLA",
-        12: "WMT",
-        13: "NVO",
-        14: "JPM",
-        15: "UNH",
-        16: "V",
-        17: "XOM",
-        18: "MA",
-        19: "ORCL",
-        20: "PG"
     };
     const options = {
         method: 'GET',
