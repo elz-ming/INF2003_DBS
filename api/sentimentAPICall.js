@@ -1,34 +1,15 @@
 const http = require('https');
 const insertSentimentData = require('../insert'); // Adjust the path as needed
 
-// using a dictionary for the top 20 ticker codes
-const ticker_codes = {
-    1: "AAPL",
-    2: "MSFT",
-    3: "NVDA",
-    4: "AMZN",
-    5: "GOOGL",
-    6: "META",
-    7: "BRK.B",
-    8: "LLY",
-    9: "AVGO",
-    10: "TSM",
-    11: "TSLA",
-    12: "WMT",
-    13: "NVO",
-    14: "JPM",
-    15: "UNH",
-    16: "V",
-    17: "XOM",
-    18: "MA",
-    19: "ORCL",
-    20: "PG"
-};
-
-function isMarketDay(date) {
+// this helps me to check the current date and format it accordingly to the last week day of the market
+function getLastMarketDay(date) {
     const day = date.getDay();
-    // Check if it's Saturday (6) or Sunday (0)
-    return day !== 6 && day !== 0;
+    if (day === 6) { // Saturday
+        date.setDate(date.getDate() - 1); // Go back to Friday
+    } else if (day === 0) { // Sunday
+        date.setDate(date.getDate() - 2); // Go back to Friday
+    }
+    return date;
 }
 
 function formatDate(date) {
@@ -39,73 +20,81 @@ function formatDate(date) {
 }
 
 export default async function handler(req, res) {
-    const today = new Date();
+    let today = new Date();
+    today = getLastMarketDay(today); // Get the last market day if today is a weekend
     const formattedDate = formatDate(today);
 
-    // Check if today is a market day
-    if (!isMarketDay(today)) {
-        return res.status(400).json({ error: 'Today is not a market day' });
-    }
+    // using a dictionary for the top 20 ticker codes
+    const ticker_codes = {
+        1: "AAPL",
+        2: "MSFT",
+        3: "NVDA",
+        4: "AMZN",
+        5: "GOOGL",
+        6: "META",
+        7: "BRK.B",
+        8: "LLY",
+        9: "AVGO",
+        10: "TSM",
+        11: "TSLA",
+        12: "WMT",
+        13: "NVO",
+        14: "JPM",
+        15: "UNH",
+        16: "V",
+        17: "XOM",
+        18: "MA",
+        19: "ORCL",
+        20: "PG"
+    };
+    const options = {
+        method: 'GET',
+        hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
+        port: null,
+        path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
+        headers: {
+            'x-rapidapi-key': process.env.RAPIDAPI_KEY, // retrieving our api key from the env file
+            'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
+        }
+    };
 
-    const promises = [];
-
-    for (const [key, ticker] of Object.entries(ticker_codes)) {
-        const options = {
-            method: 'GET',
-            hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
-            port: null,
-            path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
-            headers: {
-                'x-rapidapi-key': process.env.RAPIDAPI_KEY, // this one will affect zw and i because we using differnt api keys
-                'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
-            }
-        };
-
-        const promise = new Promise((resolve, reject) => {
-            const reqSentiment = http.request(options, async (response) => {
+    try {
+        const sentimentData = await new Promise((resolve, reject) => {
+            const reqSentiment = http.request(options, (response) => {
                 const chunks = [];
-
-                response.on('data', (chunk) => {
-                    chunks.push(chunk);
-                });
-
+                response.on('data', (chunk) => chunks.push(chunk));
                 response.on('end', async () => {
                     try {
                         const body = Buffer.concat(chunks);
                         const data = JSON.parse(body.toString());
-
+        
+                        console.log('API Response:', data); //checking our response value
+        
                         if (data.sentiments && data.sentiments.length > 0) {
                             for (const sentiment of data.sentiments) {
                                 const sentimentValue = sentiment.sentimentValue;
                                 const sentimentDate = sentiment.date;
-
-                                // this will help to insert the json data into the database, the insertSentimentData function is defined in the insert.js
                                 await insertSentimentData(ticker, sentimentDate, sentimentValue);
                             }
                         }
-
+        
                         resolve(data);
                     } catch (err) {
                         reject(err);
                     }
                 });
             });
-
+        
             reqSentiment.on('error', (error) => {
                 reject(error);
             });
-
+        
             reqSentiment.end();
         });
+        
 
-        promises.push(promise);
+        res.status(200).json(sentimentData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    Promise.all(promises)
-        .then((responses) => {
-            res.status(200).json(responses);
-        })
-        .catch((error) => {
-            res.status(500).json({ error: error.message });
-        });
 }

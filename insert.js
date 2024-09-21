@@ -1,18 +1,25 @@
 const db = require('./db');
 
-// Function to insert sentiment analysis data into the database
+// Function to insert or update sentiment analysis data into the database
 const insertSentimentData = async (ticker, date, sentimentValue) => {
   try {
     await db.query(
-      'INSERT INTO sentimentAnalysis (ticker, date, sentiment) VALUES ($1, $2, $3)',
+      `INSERT INTO sentimentanalysis (ticker, date, sentiment)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (ticker) 
+       DO UPDATE SET sentiment = EXCLUDED.sentiment, date = $2`, 
+       //on conflict checks for the ticker code in the database system
+       // this helps to update the sentiment value and date if the ticker already exist in the system
       [ticker, date, sentimentValue]
     );
-    console.log(`Inserted data for ${ticker}: Date=${date}, Sentiment=${sentimentValue}`);
+    console.log(`Upserted data for ${ticker}: Date=${date}, Sentiment=${sentimentValue}`);
   } catch (err) {
-    console.error('Error inserting data:', err);
+    console.error('Error inserting or updating data:', err);
     throw err;
   }
 };
+
+module.exports = insertSentimentData;
 
 // Function to insert stock data into the database
 const insertStockData = async (ticker, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, date, open, high, low, close, volume) => {
