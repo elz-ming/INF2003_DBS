@@ -38,6 +38,7 @@ const insertStockData = async (ticker, longName, instrumentType, regularMarketPr
     throw err;
   }
 };
+module.exports = insertStockData;
 
 const insertStockNews = async (ticker, url, img, title, text, source, type, time, date, ago) => {
   try {
@@ -71,4 +72,4 @@ const insertStockNews = async (ticker, url, img, title, text, source, type, time
   }
 };
 
-module.exports = { insertSentimentData, insertStockData, insertStockNews };
+// module.exports = { insertSentimentData, insertStockData, insertStockNews };

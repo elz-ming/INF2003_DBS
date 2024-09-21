@@ -30,6 +30,19 @@ function sentimentAnalysis() {
 
 }
 
+async function fetchStockData() {
+  console.log("Fetch Stock Data button clicked");
+  try {
+    const response = await fetch("/api/stockInfoAPI");
+    if (!response.ok) throw new Error("Network response was not ok");
+    const data = await response.json();
+    document.getElementById("data").textContent = JSON.stringify(data, null, 2);
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+  }
+}
+
+
 // Function to fetch stock news data from /api/stockNewsAPI
 async function fetchStockNews() {
   console.log("Fetch Stock News button clicked");

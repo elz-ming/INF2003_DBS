@@ -1,171 +1,140 @@
-// const https = require('https');
-
-// export default function handler(req, res) {
-//   if (req.method === 'GET') {
-//     const options = {
-//       method: 'POST',
-//       hostname: 'yahoo-finance160.p.rapidapi.com',
-//       port: null,
-//       path: '/history',
-//       headers: {
-//         'x-rapidapi-key': 'c3dd0c1e20mshd942dc8a8d040e9p10f7cbjsnfa66d893170a',
-//         'x-rapidapi-host': 'yahoo-finance160.p.rapidapi.com',
-//       },
-//     };
-
-//     const apiReq = https.request(options, (apiRes) => {
-//       const chunks = [];
-
-//       apiRes.on('data', (chunk) => {
-//         chunks.push(chunk);
-//       });
-
-//       apiRes.on('end', () => {
-//         const body = Buffer.concat(chunks).toString();
-//         const data = JSON.parse(body);
-
-//         // Extracting fields from the metadata section
-//         const tickerCode = data.metadata.symbol;
-//         const regularMarketPrice = data.metadata.regularMarketPrice;
-//         const fiftyTwoWeekHigh = data.metadata.fiftyTwoWeekHigh;
-//         const fiftyTwoWeekLow = data.metadata.fiftyTwoWeekLow;
-//         const regularMarketDayHigh = data.metadata.regularMarketDayHigh;
-//         const regularMarketDayLow = data.metadata.regularMarketDayLow;
-//         const regularMarketVolume = data.metadata.regularMarketVolume;
-//         const longName = data.metadata.longName;
-//         const instrumentType = data.metadata.instrumentType;
-
-//         // Extracting the 20th key values from the 'records' array
-//         const recordIndex20 = data.records[19];
-//         const open20 = recordIndex20.Open;
-//         const high20 = recordIndex20.High;
-//         const low20 = recordIndex20.Low;
-//         const close20 = recordIndex20.Close;
-//         const volume20 = recordIndex20.Volume;
-
-//         // Sending extracted fields as a JSON response
-//         res.status(200).json({
-//           tickerCode,
-//           regularMarketPrice,
-//           fiftyTwoWeekHigh,
-//           fiftyTwoWeekLow,
-//           regularMarketDayHigh,
-//           regularMarketDayLow,
-//           regularMarketVolume,
-//           longName,
-//           instrumentType,
-//           record20: {
-//             date: recordIndex20.index,
-//             open: open20,
-//             high: high20,
-//             low: low20,
-//             close: close20,
-//             volume: volume20,
-//           },
-//         });
-//       });
-//     });
-
-//     apiReq.on('error', (error) => {
-//       res.status(500).json({ error: error.message });
-//     });
-
-//     apiReq.write(JSON.stringify({ stock: 'TSLA', period: '1mo' }));
-//     apiReq.end();
-//   } else {
-//     res.setHeader('Allow', ['GET']);
-//     res.status(405).end(`Method ${req.method} Not Allowed`);
-//   }
-// }
 const https = require('https');
-const insertStockData = require('../insert'); // Import the insertStockData function
+const insertStockData = require('../insert'); 
 
-export default function handler(req, res) {
+const ticker_codes = {
+    1: "AAPL",
+    2: "MSFT",
+    3: "NVDA",
+    4: "AMZN",
+    5: "GOOGL",
+    6: "META",
+    7: "TSLA",
+    8: "LLY",
+    9: "AVGO",
+    10: "TSM",
+};
+
+export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const options = {
-      method: 'POST',
-      hostname: 'yahoo-finance160.p.rapidapi.com',
-      port: null,
-      path: '/history',
-      headers: {
-        'x-rapidapi-key': 'c3dd0c1e20mshd942dc8a8d040e9p10f7cbjsnfa66d893170a',
-        'x-rapidapi-host': 'yahoo-finance160.p.rapidapi.com',
-        'Content-Type': 'application/json',
-      },
-    };
+    const promises = [];
 
-    const apiReq = https.request(options, (apiRes) => {
-      const chunks = [];
+    for (const [key, ticker] of Object.entries(ticker_codes)) {
+      const options = {
+        method: 'POST',
+        hostname: 'yahoo-finance160.p.rapidapi.com',
+        port: null,
+        path: '/history',
+        headers: {
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY, 
+          'Content-Type': 'application/json',
+        },
+      };
+      // promises are basically requests
+      const apiPromise = new Promise((resolve, reject) => {
+        const apiReq = https.request(options, (apiRes) => {
+          const chunks = [];
 
-      apiRes.on('data', (chunk) => {
-        chunks.push(chunk);
-      });
+          apiRes.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
 
-      apiRes.on('end', async () => {
-        const body = Buffer.concat(chunks).toString();
-        const data = JSON.parse(body);
+          apiRes.on('end', async () => {
+            const body = Buffer.concat(chunks).toString();
+            let data;
 
-        // Extracting fields from the metadata section
-        const tickerCode = data.metadata.symbol;
-        const regularMarketPrice = data.metadata.regularMarketPrice;
-        const fiftyTwoWeekHigh = data.metadata.fiftyTwoWeekHigh;
-        const fiftyTwoWeekLow = data.metadata.fiftyTwoWeekLow;
-        const regularMarketDayHigh = data.metadata.regularMarketDayHigh;
-        const regularMarketDayLow = data.metadata.regularMarketDayLow;
-        const regularMarketVolume = parseInt(data.metadata.regularMarketVolume); // Cast to integer
-        const longName = data.metadata.longName;
-        const instrumentType = data.metadata.instrumentType;
+            try {
+              data = JSON.parse(body);
+            } catch (err) {
+              console.error(`Error parsing JSON for ${ticker}: ${err.message}`);
+              reject(`Error parsing JSON for ${ticker}`);
+              return;
+            }
 
-        // Extracting the 20th key values from the 'records' array
-        const recordIndex20 = data.records[19];
-        const date20 = recordIndex20.index;
-        const open20 = recordIndex20.Open;
-        const high20 = recordIndex20.High;
-        const low20 = recordIndex20.Low;
-        const close20 = recordIndex20.Close;
-        const volume20 = parseInt(recordIndex20.Volume); // Cast to integer
+            if (!data.metadata) {
+              console.error(`Missing metadata for ${ticker}: ${body}`);
+              reject(`Missing metadata for ${ticker}`);
+              return;
+            }
+            // this stores and looks for the last data item in the list.
+            const lastRecordIndex = data.records[data.records.length - 1];
+            if (!lastRecordIndex) {
+              console.error(`No records found for ${ticker}`);
+              reject(`No records found for ${ticker}`);
+              return;
+            }
 
-        try {
-          // Insert stock data into the database
-          await insertStockData(
-            tickerCode, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, 
-            fiftyTwoWeekLow, regularMarketDayHigh, regularMarketDayLow, regularMarketVolume,
-            date20, open20, high20, low20, close20, volume20
-          );
-        } catch (err) {
-          res.status(500).json({ error: 'Error inserting stock data into the database' });
-          return;
-        }
+            // this stores all of the items we need for database into the respective variables 
+            const tickerCode = data.metadata.symbol;
+            const regularMarketPrice = data.metadata.regularMarketPrice;
+            const fiftyTwoWeekHigh = data.metadata.fiftyTwoWeekHigh;
+            const fiftyTwoWeekLow = data.metadata.fiftyTwoWeekLow;
+            const regularMarketDayHigh = data.metadata.regularMarketDayHigh;
+            const regularMarketDayLow = data.metadata.regularMarketDayLow;
+            const regularMarketVolume = parseInt(data.metadata.regularMarketVolume);
+            const longName = data.metadata.longName;
+            const instrumentType = data.metadata.instrumentType;
 
-        // Sending extracted fields as a JSON response
-        res.status(200).json({
-          tickerCode,
-          regularMarketPrice,
-          fiftyTwoWeekHigh,
-          fiftyTwoWeekLow,
-          regularMarketDayHigh,
-          regularMarketDayLow,
-          regularMarketVolume,
-          longName,
-          instrumentType,
-          record20: {
-            date: date20,
-            open: open20,
-            high: high20,
-            low: low20,
-            close: close20,
-            volume: volume20,
-          },
+            const dateLast = lastRecordIndex.index;
+            const openLast = lastRecordIndex.Open;
+            const highLast = lastRecordIndex.High;
+            const lowLast = lastRecordIndex.Low;
+            const closeLast = lastRecordIndex.Close;
+            const volumeLast = parseInt(lastRecordIndex.Volume);
+
+            //insertion begins here where it calls the insert.js file and inserts the data into the database
+            try {
+              await insertStockData(
+                tickerCode, longName, instrumentType, regularMarketPrice,
+                fiftyTwoWeekHigh, fiftyTwoWeekLow, regularMarketDayHigh,
+                regularMarketDayLow, regularMarketVolume, dateLast, openLast,
+                highLast, lowLast, closeLast, volumeLast
+              );
+              resolve({
+                tickerCode,
+                regularMarketPrice,
+                fiftyTwoWeekHigh,
+                fiftyTwoWeekLow,
+                regularMarketDayHigh,
+                regularMarketDayLow,
+                regularMarketVolume,
+                longName,
+                instrumentType,
+                lastRecord: {
+                  date: dateLast,
+                  open: openLast,
+                  high: highLast,
+                  low: lowLast,
+                  close: closeLast,
+                  volume: volumeLast,
+                },
+              });
+            } catch (err) {
+              console.error(`Error inserting data for ${tickerCode}: ${err.message}`);
+              reject(`Error inserting data for ${tickerCode}: ${err.message}`);
+            }
+          });
         });
+
+        apiReq.on('error', (error) => {
+          console.error(`Error fetching stock data for ${ticker}: ${error.message}`);
+          reject(`Error fetching stock data for ${ticker}: ${error.message}`);
+        });
+
+        apiReq.write(JSON.stringify({ stock: ticker, period: '1mo' }));
+        apiReq.end();
       });
-    });
 
-    apiReq.on('error', (error) => {
-      res.status(500).json({ error: error.message });
-    });
+      promises.push(apiPromise);
+    }
 
-    apiReq.write(JSON.stringify({ stock: 'TSLA', period: '1mo' }));
-    apiReq.end();
+    Promise.all(promises)
+      .then((results) => {
+        res.status(200).json(results);
+      })
+      .catch((error) => {
+        console.error(`Error in API calls: ${error}`);
+        res.status(500).json({ error });
+      });
   } else {
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
