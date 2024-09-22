@@ -1,7 +1,7 @@
 const http = require('https');
-const insertSentimentData = require('../insert'); // Adjust the path as needed
+const { insertSentimentData } = require('../insert'); 
 
-// this helps me to check the current date and format it accordingly to the last week day of the market
+// This helps me to check the current date and format it accordingly to the last weekday of the market
 function getLastMarketDay(date) {
     const day = date.getDay();
     if (day === 6) { // Saturday
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     today = getLastMarketDay(today); // Get the last market day if today is a weekend
     const formattedDate = formatDate(today);
 
-    // using a dictionary for the top 20 ticker codes
+    // Using a dictionary for the top 20 ticker codes
     const ticker_codes = {
         1: "AAPL",
         2: "MSFT",
@@ -37,53 +37,59 @@ export default async function handler(req, res) {
         9: "AVGO",
         10: "TSM",
     };
-    const options = {
-        method: 'GET',
-        hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
-        port: null,
-        path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
-        headers: {
-            'x-rapidapi-key': process.env.RAPIDAPI_KEY, // retrieving our api key from the env file
-            'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
-        }
-    };
 
     try {
-        const sentimentData = await new Promise((resolve, reject) => {
-            const reqSentiment = http.request(options, (response) => {
-                const chunks = [];
-                response.on('data', (chunk) => chunks.push(chunk));
-                response.on('end', async () => {
-                    try {
-                        const body = Buffer.concat(chunks);
-                        const data = JSON.parse(body.toString());
-        
-                        console.log('API Response:', data); //checking our response value
-        
-                        if (data.sentiments && data.sentiments.length > 0) {
-                            for (const sentiment of data.sentiments) {
-                                const sentimentValue = sentiment.sentimentValue;
-                                const sentimentDate = sentiment.date;
-                                await insertSentimentData(ticker, sentimentDate, sentimentValue);
-                            }
-                        }
-        
-                        resolve(data);
-                    } catch (err) {
-                        reject(err);
-                    }
-                });
-            });
-        
-            reqSentiment.on('error', (error) => {
-                reject(error);
-            });
-        
-            reqSentiment.end();
-        });
-        
+        const allSentimentData = []; // Array to hold all sentiment data
 
-        res.status(200).json(sentimentData);
+        for (const ticker of Object.values(ticker_codes)) {
+            const options = {
+                method: 'GET',
+                hostname: 'us-stocks-news-sentiment-data.p.rapidapi.com',
+                port: null,
+                path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
+                headers: {
+                    'x-rapidapi-key': process.env.RAPIDAPI_KEY, // Retrieving our API key from the env file
+                    'x-rapidapi-host': 'us-stocks-news-sentiment-data.p.rapidapi.com'
+                }
+            };
+
+            const sentimentData = await new Promise((resolve, reject) => {
+                const reqSentiment = http.request(options, (response) => {
+                    const chunks = [];
+                    response.on('data', (chunk) => chunks.push(chunk));
+                    response.on('end', async () => {
+                        try {
+                            const body = Buffer.concat(chunks);
+                            const data = JSON.parse(body.toString());
+        
+                            console.log('API Response:', data); // Checking our response value
+        
+                            if (data.sentiments && data.sentiments.length > 0) {
+                                for (const sentiment of data.sentiments) {
+                                    const sentimentValue = sentiment.sentimentValue;
+                                    const sentimentDate = sentiment.date;
+                                    await insertSentimentData(ticker, sentimentDate, sentimentValue);
+                                }
+                            }
+        
+                            resolve(data);
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                });
+        
+                reqSentiment.on('error', (error) => {
+                    reject(error);
+                });
+        
+                reqSentiment.end();
+            });
+
+            allSentimentData.push(sentimentData); // Store sentiment data for each ticker
+        }
+
+        res.status(200).json(allSentimentData); // Return all sentiment data
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
