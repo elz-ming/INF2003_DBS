@@ -1,5 +1,5 @@
 const https = require('https');
-const insertStockData = require('../insert'); 
+const { insertStockData } = require('../insert');
 
 const ticker_codes = {
     1: "AAPL",
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         port: null,
         path: '/history',
         headers: {
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY, 
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY, // retreiving the api key from the env file 
           'Content-Type': 'application/json',
         },
       };
