@@ -9,19 +9,19 @@ module.exports = async (req, res) => {
                 s.longname,
                 sa.sentiment,
                 s.regularmarketprice 
-        FROM stockdata s
+        FROM stocks s
         JOIN (
           SELECT ticker, 
                   sentiment
           FROM 
-            sentimentanalysis
+            sentiments
           WHERE 
               (ticker, date) IN (
                   SELECT 
                       ticker, 
                       MAX(date) AS latest_date
                   FROM 
-                      sentimentanalysis
+                      sentiments
                   GROUP BY 
                       ticker
             )
