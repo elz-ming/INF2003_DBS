@@ -1,0 +1,260 @@
+main {
+  gap: 16px;
+}
+
+section {
+  display: flex;
+  width: 100%;
+}
+
+h2 {
+  font-size: 8rem;
+}
+
+h3 {
+  font-size: 6rem;
+}
+
+h4 {
+  font-size: 4rem;
+}
+
+p {
+  font-size: 3rem;
+}
+
+.pink {
+  color: #ff928a;
+}
+
+.bg-pink {
+  background-color: #ff928a;
+}
+
+.blue {
+  color: #3aaedf;
+}
+
+.bg-blue {
+  background-color: #3aaedf;
+}
+
+#stock-text {
+  justify-content: space-between;
+  width: 100%;
+}
+
+#stock-statistics {
+  flex-direction: column;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stat-title {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 8px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #ffffff;
+  color: #a8a5a5;
+  padding: 8px;
+  border-bottom: #a8a5a5 1px solid;
+}
+
+#stock-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  gap: 8px;
+}
+
+#stock-buttons button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+  border-radius: 10px;
+  color: white;
+}
+
+#sell-button {
+  background-color: #ff928a;
+}
+
+#buy-button {
+  background-color: #3aaedf;
+}
+
+#stock-esg {
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Main progress bar container */
+.progress-bar {
+  width: 100%; /* Full width */
+  height: 20px; /* Height of the progress bar */
+  background-color: #e0e0e0; /* Light grey background */
+  border-radius: 10px; /* Rounded corners */
+  overflow: hidden; /* Clip the fill element to fit within the container */
+  position: relative;
+}
+
+/* The fill element that shows the progress */
+.progress-bar .fill {
+  height: 100%;
+  background-color: #4caf50; /* Green color for the progress */
+  transition: width 0.5s ease; /* Smooth transition for the fill */
+  border-radius: 10px; /* Rounded corners on the left side */
+}
+
+#stock-news {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.news-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+#stock-news a {
+  text-decoration: none;
+  color: #000000;
+}
+
+#modal {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+#modal-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 4;
+}
+
+#modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: 6;
+  margin: 0 16px;
+}
+
+@media (min-width: 769px) {
+  #modal-content {
+    width: 361px;
+    margin: 0;
+  }
+}
+
+#modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+}
+
+#modal-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+}
+
+#modal-amount {
+  font-size: 6rem;
+}
+
+#amount-input {
+  width: 100%;
+  height: 56px;
+  font-size: 12rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+#amount-input.green {
+  color: #19a838;
+  border: 1px solid #19a838;
+}
+
+#amount-input.red {
+  color: #cb1b1b;
+  border: 1px solid #cb1b1b;
+}
+
+#moda-amount {
+  font-size: 3rem;
+  color: #000000;
+}
+
+#modal-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+}
+
+#confirm-button {
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+#confirm-button.pink {
+  color: #ff928a;
+  box-shadow: 0 4px 4px #ff928a;
+}
+
+#confirm-button.blue {
+  color: #3aaedf;
+  box-shadow: 0 4px 4px #3aaedf;
+}
