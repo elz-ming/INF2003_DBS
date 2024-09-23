@@ -13,7 +13,7 @@ const pool = new Pool({
 const companies = {
   1: { name: "Apple Inc." },
   2: { name: "Microsoft Corporation" },
-  3: { name: "NVIDIA Corporation" },
+  3: { name: "Tesla, Inc." },
   4: { name: "Amazon.com, Inc." },
   5: { name: "Alphabet Inc." },
 };
