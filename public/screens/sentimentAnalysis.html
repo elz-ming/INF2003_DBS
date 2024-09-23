@@ -3,24 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WAZY</title>
+    <title>Sentiment Analysis</title>
     <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/index.css" />
   </head>
   <body>
     <div id="background"></div>
     <header id="header"></header>
     <main>
-      <section id="data-header">
-        <div id="stock">Stock</div>
-        <div id="sentiment">Sentiment</div>
-        <div id="price">Price</div>
-      </section>
-      <section id="data-body"></section>
+      <h1>Sentiment Analysis Results</h1>
+      <pre id="data"></pre>
     </main>
     <footer id="footer"></footer>
 
     <script src="/js/script.js"></script>
-    <script src="/js/index.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        await fetchStockNews();
+        await fetchStockData();
+        await sentimentAnalysis();
+      });
+    </script>
   </body>
 </html>

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       checkAuth(), // Check authentication status
       loadScreenComponents(), // Load common components and handle screen-specific components
     ]);
+    configureHeader();
   } catch (error) {
     console.error(
       "Error during authentication check or loading screen components:",
@@ -16,6 +17,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/screens/login.html";
   }
 });
+
+const logoutButton = document.getElementById("logout-button");
+
+if (logoutButton) {
+  logoutButton.addEventListener("click", async () => {
+    try {
+      const response = await fetch("/api/logout.js", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        window.location.href = "/screens/login.html";
+      } else {
+        console.error("Logout failed:", await response.text());
+        // Handle error case, maybe display a message to the user
+      }
+    } catch (error) {
+      console.error("Error during logout request:", error);
+      // Handle network or other errors
+    }
+  });
+}
 
 // Function to check authentication status
 async function checkAuth() {
@@ -55,6 +81,44 @@ async function loadScreenComponents() {
   setActiveNavItem();
 }
 
+function configureHeader() {
+  const currentPath = window.location.pathname;
+
+  // Define main and nested pages
+  const mainPages = [
+    "/",
+    "/index.html",
+    "/screens/history.html",
+    "/screens/profile.html",
+  ];
+  const nestedPages = [
+    "/screens/history-detail.html",
+    "/screens/stock-detail.html",
+    "/screens/edit-profile.html",
+  ];
+
+  const isMainPage = mainPages.includes(currentPath);
+  const isNestedPage = nestedPages.includes(currentPath);
+
+  // Show/Hide elements based on the page type
+  const leftElement = document.getElementById("left");
+  const rightElement = document.getElementById("right");
+
+  // Clear contents based on the page type
+  if (leftElement && rightElement) {
+    if (isNestedPage) {
+      rightElement.innerHTML = "";
+    }
+
+    if (isMainPage) {
+      leftElement.innerHTML = "";
+    }
+
+    leftElement.style.display = "flex";
+    rightElement.style.display = "flex";
+  }
+}
+
 async function fetchAndCacheComponent(elementId, url) {
   let cachedContent = sessionStorage.getItem(elementId);
   if (cachedContent) {
@@ -74,6 +138,7 @@ async function fetchAndCacheComponent(elementId, url) {
 async function loadCommonComponents() {
   await Promise.all([
     fetchAndCacheComponent("background", "/components/background.html"),
+    fetchAndCacheComponent("header", "/components/header.html"),
     fetchAndCacheComponent("footer", "/components/footer.html"),
   ]);
 }
@@ -113,7 +178,22 @@ function setActiveNavItem() {
     const linkPath = new URL(link.href).pathname; // Extract path from link href
 
     // Match the path precisely or use a more specific segment
-    if (normalizedPath === linkPath || normalizedPath.includes(linkPath)) {
+    // Set specific cases for which links should be active
+    if (
+      (normalizedPath === "/index.html" ||
+        normalizedPath.includes("/screens/stock-detail.html")) &&
+      linkPath === "/index.html"
+    ) {
+      item.classList.add("active");
+    } else if (
+      normalizedPath.includes("/screens/history.html") &&
+      linkPath === "/screens/history.html"
+    ) {
+      item.classList.add("active");
+    } else if (
+      normalizedPath.includes("/screens/profile.html") &&
+      linkPath === "/screens/profile.html"
+    ) {
       item.classList.add("active");
     } else {
       item.classList.remove("active");
