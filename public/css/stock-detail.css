@@ -1,78 +1,75 @@
+main {
+  gap: 16px;
+}
+
 section {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   width: 100%;
-  height: auto;
-  gap: 8px;
-  padding: 16px;
-  border: 1px solid white;
-  border-radius: 10px;
 }
 
 h2 {
+  font-size: 8rem;
+}
+
+h3 {
   font-size: 6rem;
 }
 
-.bg-black {
-  background-color: #000000;
-}
-
-.red {
-  color: #cb1b1b;
-}
-
-.bg-red {
-  background-color: #cb1b1b;
-}
-
-.green {
-  color: #19a838;
-}
-
-.bg-green {
-  background-color: #19a838;
-}
-
-#profile {
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  border: none;
-}
-
-#profile-picture {
-  width: 200px;
-  height: 200px;
-  background-color: #d9d9d9;
-  border-radius: 50%;
-}
-
-#profile h2 {
-  text-transform: uppercase;
-}
-
-#profile-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 8px;
-  border-radius: 20px;
-  background-color: #d0cd94;
+h4 {
   font-size: 4rem;
 }
 
-#wallet-balance-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 8px;
-  font-size: 12rem;
+p {
+  font-size: 3rem;
 }
 
-#wallet-buttons {
+.pink {
+  color: #ff928a;
+}
+
+.bg-pink {
+  background-color: #ff928a;
+}
+
+.blue {
+  color: #3aaedf;
+}
+
+.bg-blue {
+  background-color: #3aaedf;
+}
+
+#stock-text {
+  justify-content: space-between;
+  width: 100%;
+}
+
+#stock-statistics {
+  flex-direction: column;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stat-title {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 8px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #ffffff;
+  color: #a8a5a5;
+  padding: 8px;
+  border-bottom: #a8a5a5 1px solid;
+}
+
+#stock-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,7 +79,7 @@ h2 {
   gap: 8px;
 }
 
-#wallet-buttons button {
+#stock-buttons button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,8 +91,56 @@ h2 {
   color: white;
 }
 
-#portfolio {
-  height: 800px;
+#sell-button {
+  background-color: #ff928a;
+}
+
+#buy-button {
+  background-color: #3aaedf;
+}
+
+#stock-esg {
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Main progress bar container */
+.progress-bar {
+  width: 100%; /* Full width */
+  height: 20px; /* Height of the progress bar */
+  background-color: #e0e0e0; /* Light grey background */
+  border-radius: 10px; /* Rounded corners */
+  overflow: hidden; /* Clip the fill element to fit within the container */
+  position: relative;
+}
+
+/* The fill element that shows the progress */
+.progress-bar .fill {
+  height: 100%;
+  background-color: #4caf50; /* Green color for the progress */
+  transition: width 0.5s ease; /* Smooth transition for the fill */
+  border-radius: 10px; /* Rounded corners on the left side */
+}
+
+#stock-news {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.news-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+#stock-news a {
+  text-decoration: none;
+  color: #000000;
 }
 
 #modal {
@@ -158,6 +203,10 @@ h2 {
   padding: 8px;
 }
 
+#modal-amount {
+  font-size: 6rem;
+}
+
 #amount-input {
   width: 100%;
   height: 56px;
@@ -174,6 +223,11 @@ h2 {
 #amount-input.red {
   color: #cb1b1b;
   border: 1px solid #cb1b1b;
+}
+
+#moda-amount {
+  font-size: 3rem;
+  color: #000000;
 }
 
 #modal-button {
@@ -195,12 +249,12 @@ h2 {
   background-color: #ffffff;
 }
 
-#confirm-button.green {
-  color: #19a838;
-  box-shadow: 0 4px 4px #19a838;
+#confirm-button.pink {
+  color: #ff928a;
+  box-shadow: 0 4px 4px #ff928a;
 }
 
-#confirm-button.red {
-  color: #cb1b1b;
-  box-shadow: 0 4px 4px #cb1b1b;
+#confirm-button.blue {
+  color: #3aaedf;
+  box-shadow: 0 4px 4px #3aaedf;
 }
