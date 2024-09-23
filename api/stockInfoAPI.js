@@ -1,32 +1,27 @@
-const https = require('https');
-const { insertStockData } = require('../insert');
+const https = require("https");
+const { insertStockData } = require("../insert");
 
 const ticker_codes = {
-    1: "AAPL",
-    2: "MSFT",
-    3: "NVDA",
-    4: "AMZN",
-    5: "GOOGL",
-    6: "META",
-    7: "TSLA",
-    8: "LLY",
-    9: "AVGO",
-    10: "TSM",
+  1: "AAPL",
+  2: "MSFT",
+  3: "AMZN",
+  4: "GOOGL",
+  5: "TSLA",
 };
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     const promises = [];
 
     for (const [key, ticker] of Object.entries(ticker_codes)) {
       const options = {
-        method: 'POST',
-        hostname: 'yahoo-finance160.p.rapidapi.com',
+        method: "POST",
+        hostname: "yahoo-finance160.p.rapidapi.com",
         port: null,
-        path: '/history',
+        path: "/history",
         headers: {
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY, // retreiving the api key from the env file 
-          'Content-Type': 'application/json',
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY, // retreiving the api key from the env file
+          "Content-Type": "application/json",
         },
       };
       // promises are basically requests
@@ -34,11 +29,11 @@ export default async function handler(req, res) {
         const apiReq = https.request(options, (apiRes) => {
           const chunks = [];
 
-          apiRes.on('data', (chunk) => {
+          apiRes.on("data", (chunk) => {
             chunks.push(chunk);
           });
 
-          apiRes.on('end', async () => {
+          apiRes.on("end", async () => {
             const body = Buffer.concat(chunks).toString();
             let data;
 
@@ -63,14 +58,16 @@ export default async function handler(req, res) {
               return;
             }
 
-            // this stores all of the items we need for database into the respective variables 
+            // this stores all of the items we need for database into the respective variables
             const tickerCode = data.metadata.symbol;
             const regularMarketPrice = data.metadata.regularMarketPrice;
             const fiftyTwoWeekHigh = data.metadata.fiftyTwoWeekHigh;
             const fiftyTwoWeekLow = data.metadata.fiftyTwoWeekLow;
             const regularMarketDayHigh = data.metadata.regularMarketDayHigh;
             const regularMarketDayLow = data.metadata.regularMarketDayLow;
-            const regularMarketVolume = parseInt(data.metadata.regularMarketVolume);
+            const regularMarketVolume = parseInt(
+              data.metadata.regularMarketVolume
+            );
             const longName = data.metadata.longName;
             const instrumentType = data.metadata.instrumentType;
 
@@ -84,10 +81,21 @@ export default async function handler(req, res) {
             //insertion begins here where it calls the insert.js file and inserts the data into the database
             try {
               await insertStockData(
-                tickerCode, longName, instrumentType, regularMarketPrice,
-                fiftyTwoWeekHigh, fiftyTwoWeekLow, regularMarketDayHigh,
-                regularMarketDayLow, regularMarketVolume, dateLast, openLast,
-                highLast, lowLast, closeLast, volumeLast
+                tickerCode,
+                longName,
+                instrumentType,
+                regularMarketPrice,
+                fiftyTwoWeekHigh,
+                fiftyTwoWeekLow,
+                regularMarketDayHigh,
+                regularMarketDayLow,
+                regularMarketVolume,
+                dateLast,
+                openLast,
+                highLast,
+                lowLast,
+                closeLast,
+                volumeLast
               );
               resolve({
                 tickerCode,
@@ -109,18 +117,22 @@ export default async function handler(req, res) {
                 },
               });
             } catch (err) {
-              console.error(`Error inserting data for ${tickerCode}: ${err.message}`);
+              console.error(
+                `Error inserting data for ${tickerCode}: ${err.message}`
+              );
               reject(`Error inserting data for ${tickerCode}: ${err.message}`);
             }
           });
         });
 
-        apiReq.on('error', (error) => {
-          console.error(`Error fetching stock data for ${ticker}: ${error.message}`);
+        apiReq.on("error", (error) => {
+          console.error(
+            `Error fetching stock data for ${ticker}: ${error.message}`
+          );
           reject(`Error fetching stock data for ${ticker}: ${error.message}`);
         });
 
-        apiReq.write(JSON.stringify({ stock: ticker, period: '1mo' }));
+        apiReq.write(JSON.stringify({ stock: ticker, period: "1mo" }));
         apiReq.end();
       });
 
@@ -136,7 +148,7 @@ export default async function handler(req, res) {
         res.status(500).json({ error });
       });
   } else {
-    res.setHeader('Allow', ['GET']);
+    res.setHeader("Allow", ["GET"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
