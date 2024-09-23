@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sentiment Analysis</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body>
-  <div id="background"></div>
-  <header id="header"></header>
-  <main>
-    <h1>Sentiment Analysis Results</h1>
-    <pre id="data"></pre>
-  </main>
-  <footer id="footer"></footer>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="background"></div>
+    <header id="header"></header>
+    <main>
+      <h1>Sentiment Analysis Results</h1>
+      <pre id="data"></pre>
+    </main>
+    <footer id="footer"></footer>
 
-  <script src="/js/script.js"></script>
-  <script src="/js/index.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", async function() {
-      await fetchStockNews();
-      await fetchStockData();
-      await sentimentAnalysis();
-    });
-  </script>
-</body>
+    <script src="/js/script.js"></script>
+    <script src="/js/admin.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        await fetchStockNews();
+        await fetchStockData();
+        await sentimentAnalysis();
+      });
+    </script>
+  </body>
 </html>
