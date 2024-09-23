@@ -20,8 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const logoutButton = document.getElementById("logout-button");
 
-console.log(logoutButton);
-
 if (logoutButton) {
   logoutButton.addEventListener("click", async () => {
     try {
@@ -180,7 +178,22 @@ function setActiveNavItem() {
     const linkPath = new URL(link.href).pathname; // Extract path from link href
 
     // Match the path precisely or use a more specific segment
-    if (normalizedPath === linkPath || normalizedPath.includes(linkPath)) {
+    // Set specific cases for which links should be active
+    if (
+      (normalizedPath === "/index.html" ||
+        normalizedPath.includes("/screens/stock-detail.html")) &&
+      linkPath === "/index.html"
+    ) {
+      item.classList.add("active");
+    } else if (
+      normalizedPath.includes("/screens/history.html") &&
+      linkPath === "/screens/history.html"
+    ) {
+      item.classList.add("active");
+    } else if (
+      normalizedPath.includes("/screens/profile.html") &&
+      linkPath === "/screens/profile.html"
+    ) {
       item.classList.add("active");
     } else {
       item.classList.remove("active");
