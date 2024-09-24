@@ -19,11 +19,9 @@ const insertSentimentData = async (ticker, date, sentimentValue) => {
   }
 };
 
-// Function to insert stock data into the database
-const insertStockData = async (
+// Function to insert price data into the database
+const insertPriceData = async (
   ticker,
-  longName,
-  instrumentType,
   regularMarketPrice,
   fiftyTwoWeekHigh,
   fiftyTwoWeekLow,
@@ -39,14 +37,14 @@ const insertStockData = async (
 ) => {
   try {
     await db.query(
-      `INSERT INTO stock_data 
-      (ticker, longName, instrumentType, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
-      regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, date, open, high, low, close, volume) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+      `INSERT INTO price 
+      (ticker, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
+      regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, 
+      date, open, high, low, close, volume) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+
       [
         ticker,
-        longName,
-        instrumentType,
         regularMarketPrice,
         fiftyTwoWeekHigh,
         fiftyTwoWeekLow,
@@ -61,9 +59,9 @@ const insertStockData = async (
         volume,
       ]
     );
-    console.log(`Inserted stock data for ${ticker}`);
+    console.log(`Inserted price data for ${ticker}`);
   } catch (err) {
-    console.error("Error inserting stock data:", err);
+    console.error("Error inserting price data:", err);
     throw err;
   }
 };
@@ -99,6 +97,6 @@ const insertNewsData = async (
 // Export all functions
 module.exports = {
   insertSentimentData,
-  insertStockData,
+  insertPriceData,
   insertNewsData,
 };
