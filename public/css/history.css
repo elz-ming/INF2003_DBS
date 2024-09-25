@@ -220,20 +220,3 @@ h2 {
   color: #000000;
   font-size: 4rem; /* Adjust font size as needed */
 }
-
-/* Popup Header Color Coding */
-.transaction-type-withdrawal h3 {
-  color: #ff6666; /* Color for withdrawal transactions */
-}
-
-.transaction-type-deposit h3 {
-  color: #00ccff; /* Color for deposit transactions */
-}
-
-.transaction-type-buy h3 {
-  color: #ff3333; /* Color for buy transactions */
-}
-
-.transaction-type-sell h3 {
-  color: #00ff00; /* Color for sell transactions */
-}
