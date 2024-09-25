@@ -40,8 +40,18 @@ h2 {
 #profile-picture {
   width: 200px;
   height: 200px;
-  background-color: #d9d9d9;
   border-radius: 50%;
+  overflow: hidden; /* Ensures the image doesn't overflow the circle */
+  background-color: #d9d9d9; /* Default background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#profile-picture img {
+  width: 100%; /* Ensures the image takes up the full width */
+  height: 100%; /* Ensures the image takes up the full height */
+  object-fit: cover; /* Ensures the image covers the entire container without distortion */
 }
 
 #profile h2 {

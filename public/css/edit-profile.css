@@ -1,0 +1,65 @@
+/* Set the layout and center the form */
+#edit-profile-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust form group layout */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Make labels larger */
+h2 {
+  font-size: 5rem; /* Adjust label size */
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #ffffff; /* Make the label color a bit darker */
+}
+
+/* Make labels larger */
+label {
+  font-size: 3rem; /* Adjust label size */
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333; /* Make the label color a bit darker */
+}
+
+/* Input fields styling */
+input[type="text"], 
+input[type="email"], 
+input[type="password"] {
+  width: 100%;
+  padding: 11px;
+  font-size: 3rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Submit button styling */
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 3rem;
+  color: white;
+  background-color: #19a838;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #16a332;
+}
