@@ -9,9 +9,7 @@ async function fetchData() {
 
     // Adjust based on the actual response structure
     document.getElementById("data").textContent = JSON.stringify(data, null, 2);
-
   } catch (error) {
     console.error("Error in fetchData:", error);
   }
 }
-
