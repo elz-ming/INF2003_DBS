@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Website</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/stock-detail.css" />
+  </head>
+  <body>
+    <div id="background"></div>
+    <header id="header"></header>
+    <main>
+      <section id="stock-text">
+        <h2 id="stock-name">Unknown</h2>
+        <h2 id="stock-price">N/A</h2>
+      </section>
+      <section id="stock-statistics">
+        <div class="stat-title">
+          <h3>Key Statistics</h3>
+        </div>
+        <div class="stat-row">
+          <h4>Average Daily Volume</h4>
+          <p id="ADV">N/A</p>
+        </div>
+        <div class="stat-row">
+          <h4>52W High</h4>
+          <p id="52whigh">N/A</p>
+        </div>
+        <div class="stat-row">
+          <h4>52W Low</h4>
+          <p id="52wlow">N/A</p>
+        </div>
+      </section>
+      <section id="stock-buttons">
+        <button id="sell-button">Sell</button>
+        <button id="buy-button">Buy</button>
+      </section>
+      <section id="stock-esg">
+        <h3>ESG Rating</h3>
+        <div class="esg-row">
+          <h4>Environment Score</h4>
+          <div id="env-data"></div>
+        </div>
+        <div class="esg-row">
+          <h4>Social Score</h4>
+          <div id="soc-data"></div>
+        </div>
+        <div class="esg-row">
+          <h4>Governance Score</h4>
+          <div id="gov-data"></div>
+        </div>
+      </section>
+      <section id="stock-news">
+        <h3>News</h3>
+      </section>
+      <div id="modal">
+        <div id="modal-backdrop"></div>
+        <div id="modal-content">
+          <div id="modal-title">
+            <h2>Balance : <span id="modal-balance"></span></h2>
+            <svg
+              id="modal-close"
+              width="24"
+              height="25"
+              viewBox="0 0 24 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 10.8032L3.51479 2.31799L1.81799 4.01479L10.3032 12.5L1.81799 20.9852L3.51479 22.682L12 14.1968L20.4852 22.682L22.182 20.9852L13.6968 12.5L22.182 4.01479L20.4852 2.31799L12 10.8032Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <div id="modal-input">
+            <input
+              id="amount-input"
+              type="number"
+              placeholder="Quantity"
+              min="0"
+            />
+          </div>
+          <div id="modal-amount">NA</div>
+          <div id="modal-button">
+            <button id="confirm-button"></button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer id="footer"></footer>
+
+    <script src="/js/script.js"></script>
+    <script src="/js/stock-detail.js"></script>
+  </body>
+</html>

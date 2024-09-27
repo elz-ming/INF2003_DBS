@@ -1,0 +1,239 @@
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: auto;
+}
+
+h2 {
+  font-size: 6rem;
+}
+
+.filter-row {
+  display: flex;
+  justify-content: space-between; /* Center items horizontally */
+  align-items: center; /* Align items vertically */
+}
+
+#filter-set {
+  justify-content: center;
+}
+
+.filter-row .filter-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-header {
+  font-weight: bold;
+  font-size: 4rem;
+}
+
+.filter-separator {
+  font-size: 18.4px; /* Reduced from 23px */
+}
+
+.filter-row label {
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  gap: 2px;
+}
+
+.filter-row input[type="checkbox"] {
+  width: 4rem;
+  height: 4rem;
+}
+
+.filter-row input[type="date"] {
+  height: 6rem;
+  font-size: 3rem;
+  border: none;
+  border-radius: 4px;
+}
+
+#sortDateButton,
+#sortAmountButton,
+#resetFilters,
+#applyFilters {
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+#sortDateButton:hover,
+#sortAmountButton:hover,
+#resetFilters:hover,
+#applyFilters:hover {
+  color: #ffffff;
+  background-color: #9245de;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 10px; /* Adjust this value for the desired gap between buttons */
+  justify-content: center; /* Center buttons horizontally */
+}
+
+.date-group {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.date-header {
+  padding: 8px;
+  color: #ffffff;
+  background-color: #9245de;
+  font-size: 4rem; /* Reduced from 18px */
+}
+
+.transaction-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #a8a5a5;
+  padding: 8px;
+}
+
+.transaction-card .details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.transaction-card .details .ticker {
+  font-size: 5rem;
+  font-weight: bold;
+}
+
+.transaction-card .details .type {
+  font-size: 3rem;
+}
+
+.transaction-card .amount {
+  font-size: 4rem;
+}
+
+.transaction-card.deposit {
+  color: #19a838;
+}
+
+.transaction-card.withdrawal {
+  color: #cb1b1b;
+}
+
+.transaction-card.sell {
+  color: #ff928a;
+}
+
+.transaction-card.buy {
+  color: #3aaedf;
+}
+
+#modal {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+#modal-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 4;
+}
+
+#modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: 6;
+  margin: 0 16px;
+}
+
+@media (min-width: 769px) {
+  #modal-content {
+    width: 361px;
+    margin: 0;
+  }
+}
+
+#modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+  font-size: 6rem;
+}
+
+#modal-title.deposit {
+  background-color: #19a838;
+}
+
+#modal-title.withdrawal {
+  background-color: #cb1b1b;
+}
+
+#modal-title.sell {
+  background-color: #ff928a;
+}
+
+#modal-title.buy {
+  background-color: #3aaedf;
+}
+
+#modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  padding: 8px;
+}
+
+.modal-row {
+  color: #000000;
+  font-size: 4rem; /* Adjust font size as needed */
+}
+
+/* Popup Header Color Coding */
+.transaction-type-withdrawal h3 {
+  color: #ff6666; /* Color for withdrawal transactions */
+}
+
+.transaction-type-deposit h3 {
+  color: #00ccff; /* Color for deposit transactions */
+}
+
+.transaction-type-buy h3 {
+  color: #ff3333; /* Color for buy transactions */
+}
+
+.transaction-type-sell h3 {
+  color: #00ff00; /* Color for sell transactions */
+}
