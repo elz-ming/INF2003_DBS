@@ -62,13 +62,18 @@ h2 {
   text-transform: uppercase;
 }
 
+#profile a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
 #profile-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px;
+  padding: 3rem;
   border-radius: 20px;
-  background-color: #d0cd94;
+  background-color: #9245de;
   font-size: 4rem;
 }
 
