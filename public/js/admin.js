@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ensure the back button exists before adding an event listener
   if (backButton) {
     backButton.addEventListener("click", () => {
-      window.location.href = "/screens/home.html"; // Adjust the path to your homepage if needed
+      window.location.href = "/"; // Adjust the path to your homepage if needed
     });
   }
 
