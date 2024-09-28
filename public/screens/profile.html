@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Website</title>
+    <title>WAZY</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/profile.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,9 +14,13 @@
     <header id="header"></header>
     <main>
       <section id="profile">
-        <div id="profile-picture"></div>
+        <div id="profile-picture">
+          <img src="/img/profile-pic.png" />
+        </div>
         <h2 id="profile-name">Name</h2>
-        <div id="profile-button">Edit Profile</div>
+        <a href="/screens/edit-profile.html">
+          <div id="profile-button">Edit Profile</div>
+        </a>
       </section>
       <section id="wallet">
         <h2>Wallet Balance</h2>
@@ -37,7 +41,7 @@
       <div id="modal">
         <div id="modal-backdrop"></div>
         <div id="modal-content">
-          <div id="modal-title">
+          <div id="modal-title" class="bg-black">
             <h2>Balance : <span id="modal-balance"></span></h2>
             <svg
               id="modal-close"

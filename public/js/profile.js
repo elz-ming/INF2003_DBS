@@ -37,10 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const depositButton = document.getElementById("deposit");
   const withdrawButton = document.getElementById("withdraw");
   const confirmButton = document.getElementById("confirm-button");
-  const amountInput = document.getElementById("amount-input");
   const modal = document.getElementById("modal");
   const modalBackdrop = document.getElementById("modal-backdrop");
   const modalTitle = document.getElementById("modal-title");
+  const amountInput = document.getElementById("amount-input");
   const closeButton = document.getElementById("modal-close");
   const modalBalance = document.getElementById("modal-balance");
 
@@ -60,8 +60,13 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (walletBalance < amount && action === "withdraw") {
+      alert("Insufficient funds.");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/transaction", {
+      const response = await fetch("/api/money-transaction", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showModal(action) {
     modal.style.display = "flex";
-    modalTitle.classList.remove("bg-green", "bg-red");
+    modalTitle.classList.remove("bg-green", "bg-red", "bg-black");
     amountInput.classList.remove("green", "red");
     confirmButton.classList.remove("green", "red");
 
