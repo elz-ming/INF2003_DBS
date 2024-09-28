@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
       await db.query(withdrawQuery, withdrawValues);
 
       const insertTransactionQuery =
-        "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdrawal', 'ocbc')";
+        "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdraw', 'ocbc')";
       const transactionValues = [amount, userId];
       await db.query(insertTransactionQuery, transactionValues);
 

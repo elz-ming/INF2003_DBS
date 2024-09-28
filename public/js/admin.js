@@ -1,50 +1,15 @@
-// Function to fetch sentiment data from /api/sentimentAPICall
-function sentimentAnalysis() {
-  console.log("Sentiment Analysis button clicked");
-  fetch("/api/sentimentAPICall")
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((err) => {
-          throw new Error(err.error || "Unknown error");
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      document.getElementById("data").textContent = JSON.stringify(
-        data,
-        null,
-        2
-      );
-    })
-    .catch((error) => {
-      console.error("Error fetching sentiment data:", error);
-    });
-}
-
-async function fetchStockData() {
-  console.log("Fetch Stock Data button clicked");
+async function fetchData() {
+  console.log("Fetch Data button clicked");
   try {
-    const response = await fetch("/api/stockInfoAPI");
+    const response = await fetch("/api/combinedStockAPI");
     if (!response.ok) throw new Error("Network response was not ok");
+
     const data = await response.json();
+    console.log("Fetched Data:", data); // Log the entire data object
+
+    // Adjust based on the actual response structure
     document.getElementById("data").textContent = JSON.stringify(data, null, 2);
   } catch (error) {
-    console.error("Error fetching stock data:", error);
-  }
-}
-
-// Function to fetch stock news data from /api/stockNewsAPI
-async function fetchStockNews() {
-  console.log("Fetch Stock News button clicked");
-  try {
-    const response = await fetch("/api/stockNewsAPI");
-    if (!response.ok) throw new Error("Network response was not ok");
-    const data = await response.json();
-
-    // Display the top 10 articles in the HTML
-    document.getElementById("data").textContent = JSON.stringify(data, null, 2);
-  } catch (error) {
-    console.error("Error fetching stock news data:", error);
+    console.error("Error in fetchData:", error);
   }
 }

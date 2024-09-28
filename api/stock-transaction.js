@@ -37,7 +37,12 @@ module.exports = async (req, res) => {
 
     // Retrieve stock details
     const read_result = await db.query(
-      `SELECT id, regularmarketprice FROM stocks WHERE ticker = $1`,
+      `SELECT stocks.id, 
+                prices.regularmarketprice 
+      FROM stocks
+      JOIN prices
+      ON stocks.ticker = prices.ticker 
+      WHERE stocks.ticker = $1`,
       [ticker]
     );
 
