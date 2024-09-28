@@ -16,15 +16,17 @@ module.exports = async (req, res) => {
         // Query 1: Fetch stock data
         db.query(
           `
-          SELECT longname,
-                regularmarketprice, 
-                volume, 
-                fiftytwoweekhigh, 
-                fiftytwoweeklow, 
-                date
+          SELECT stocks.longname,
+                  prices.regularmarketprice, 
+                  prices.volume,
+                  prices.fiftytwoweekhigh,
+                  prices.fiftytwoweeklow,
+                  prices.date
           FROM stocks
-          WHERE ticker = $1
-          ORDER BY date DESC
+          JOIN prices
+          ON prices.ticker = stocks.ticker
+          WHERE stocks.ticker = $1
+          ORDER BY prices.date DESC
           LIMIT 1;
         `,
           [ticker]
@@ -37,7 +39,7 @@ module.exports = async (req, res) => {
                  social_pillar_score, 
                  governance_pillar_score
           FROM esg
-          WHERE ticker_code = $1;
+          WHERE ticker = $1;
         `,
           [ticker]
         ),

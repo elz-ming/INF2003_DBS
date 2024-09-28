@@ -1,33 +1,17 @@
 let selectedDateSortOrder = "latest"; // Default sort order for date
 let selectedAmountSortOrder = "highest"; // Default sort order for amount
+let cachedTransactions = []; // Cache for fetched transactions
 
-async function fetchTransactions(
-  selectedTypes = [],
-  dateSortOrder = "latest",
-  amountSortOrder = "highest",
-  startDate = null,
-  endDate = null
-) {
+async function fetchTransactions() {
   try {
-    const query = new URLSearchParams();
-    if (selectedTypes.length > 0) {
-      query.append("types", selectedTypes.join(","));
-    }
-    query.append("dateSort", dateSortOrder);
-    query.append("amountSort", amountSortOrder);
-    if (startDate) {
-      query.append("startDate", startDate);
-    }
-    if (endDate) {
-      query.append("endDate", endDate);
-    }
-
-    console.log("Fetching with query:", query.toString()); // Debug: Check query
-
-    const response = await fetch(`/api/history?${query.toString()}`);
+    const response = await fetch(`/api/history`);
     const data = await response.json();
     console.log("Fetched data:", data); // Debug: Check data
-    renderTransactions(data);
+
+    // Store fetched data in cache
+    cachedTransactions = data;
+
+    renderTransactions(cachedTransactions); // Render initially loaded transactions
   } catch (error) {
     console.error("Error fetching transactions:", error);
   }
@@ -57,7 +41,7 @@ function renderTransactions(transactions) {
     dateGroup.appendChild(dateHeader);
 
     groupedTransactions[date].forEach((transaction) => {
-      const validTypes = ["buy", "sell", "withdrawal", "deposit"];
+      const validTypes = ["buy", "sell", "withdraw", "deposit"];
       if (validTypes.includes(transaction.transaction_type.toLowerCase())) {
         const transactionCard = document.createElement("div");
         transactionCard.classList.add(
@@ -119,7 +103,6 @@ function displayPopup(transaction) {
   const modalBody = document.getElementById("modal-body");
   const closeButton = document.getElementById("modal-close");
 
-  // Format the transaction type with only the first letter uppercase
   const transactionType =
     transaction.transaction_type.charAt(0).toUpperCase() +
     transaction.transaction_type.slice(1).toLowerCase();
@@ -128,11 +111,9 @@ function displayPopup(transaction) {
   modalTitle.classList.remove("buy", "sell", "deposit", "withdraw");
   modalTitle.classList.add(transaction.transaction_type.toLowerCase());
 
-  // Generate the content for the popup
   let content = ``;
-  // Populate popup based on transaction type
   if (
-    transaction.transaction_type.toLowerCase() === "withdrawal" ||
+    transaction.transaction_type.toLowerCase() === "" ||
     transaction.transaction_type.toLowerCase() === "deposit"
   ) {
     content += `
@@ -142,9 +123,9 @@ function displayPopup(transaction) {
     <div class="modal-row"><strong>Bank:</strong> ${
       transaction.bank || "N/A"
     }</div>
-        <div class="modal-row"><strong>Date:</strong> ${new Date(
-          transaction.order_executed
-        ).toLocaleDateString()}</div>
+    <div class="modal-row"><strong>Date:</strong> ${new Date(
+      transaction.order_executed
+    ).toLocaleDateString()}</div>
     <div class="modal-row"><strong>Time:</strong> ${new Date(
       transaction.order_executed
     ).toLocaleTimeString()}</div>
@@ -157,9 +138,9 @@ function displayPopup(transaction) {
       <div class="modal-row"><strong>Stock Name:</strong> ${
         transaction.stock_name || "N/A"
       }</div>
-           <div class="modal-row"><strong>Stock Price:</strong> $${transaction.price.toFixed(
-             2
-           )}</div>
+      <div class="modal-row"><strong>Stock Price:</strong> $${transaction.price.toFixed(
+        2
+      )}</div>
       <div class="modal-row"><strong>Quantity:</strong> ${
         transaction.quantity
       }</div>
@@ -172,7 +153,7 @@ function displayPopup(transaction) {
       <div class="modal-row"><strong>Time:</strong> ${new Date(
         transaction.order_executed
       ).toLocaleTimeString()}</div>
-      `;
+    `;
   }
 
   modalBody.innerHTML = content;
@@ -182,7 +163,6 @@ function displayPopup(transaction) {
     modalBackdrop.addEventListener("click", closeModal);
   }
 
-  // Assuming you have a close button in your modal
   if (closeButton) {
     closeButton.addEventListener("click", closeModal);
   }
@@ -211,6 +191,46 @@ function groupByDate(transactions) {
   }, {});
 }
 
+function filterTransactions(transactions, selectedTypes, startDate, endDate) {
+  return transactions.filter((transaction) => {
+    const transactionType = transaction.transaction_type.toLowerCase();
+    const inSelectedTypes =
+      selectedTypes.length === 0 || selectedTypes.includes(transactionType);
+
+    const transactionDate = new Date(transaction.order_executed);
+    const isInDateRange =
+      (!startDate || transactionDate >= new Date(startDate)) &&
+      (!endDate || transactionDate <= new Date(endDate));
+
+    return inSelectedTypes && isInDateRange;
+  });
+}
+
+function applySorting(transactions) {
+  transactions.sort((a, b) => {
+    // Extract only the date part (YYYY-MM-DD) from the order_executed field
+    const dateA = new Date(a.order_executed).toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+    const dateB = new Date(b.order_executed).toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+
+    // Primary sorting: by date
+    if (dateA < dateB) {
+      return selectedDateSortOrder === "latest" ? 1 : -1; // For latest, sort in descending order
+    } else if (dateA > dateB) {
+      return selectedDateSortOrder === "latest" ? -1 : 1; // For earliest, sort in ascending order
+    }
+
+    // If dates are equal, sort by amount (secondary sorting)
+    if (a.amount < b.amount) {
+      return selectedAmountSortOrder === "highest" ? 1 : -1; // For highest, sort in descending order
+    } else if (a.amount > b.amount) {
+      return selectedAmountSortOrder === "highest" ? -1 : 1; // For lowest, sort in ascending order
+    }
+
+    // If both date and amount are equal, return 0 (no change)
+    return 0;
+  });
+}
+
 document.getElementById("sortDateButton").addEventListener("click", () => {
   const dateButton = document.getElementById("sortDateButton");
   const currentSort = dateButton.textContent.toLowerCase();
@@ -229,7 +249,7 @@ document.getElementById("sortAmountButton").addEventListener("click", () => {
     selectedAmountSortOrder.slice(1);
 });
 
-// Apply filters and fetch transactions
+// Apply filters and sort transactions
 document.getElementById("applyFilters").addEventListener("click", () => {
   const typeFilter = document.querySelectorAll(
     "#filter input[type='checkbox']:checked"
@@ -242,40 +262,47 @@ document.getElementById("applyFilters").addEventListener("click", () => {
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
 
-  // Fetch transactions with selected types, date sort order, amount sort order, and date range
-  fetchTransactions(
+  // Filter transactions from the cache
+  let filteredTransactions = filterTransactions(
+    cachedTransactions,
     selectedTypes,
-    selectedDateSortOrder,
-    selectedAmountSortOrder,
     startDate,
     endDate
   );
+
+  // Apply sorting on the filtered transactions
+  applySorting(filteredTransactions);
+
+  // Render the filtered and sorted transactions
+  renderTransactions(filteredTransactions);
 });
 
 // Reset filters and sort options to defaults
 document.getElementById("resetFilters").addEventListener("click", () => {
-  // Reset the sorting order
-  selectedDateSortOrder = "latest";
-  selectedAmountSortOrder = "highest";
+  selectedDateSortOrder = "latest"; // Default sorting by latest date
+  selectedAmountSortOrder = "highest"; // Default sorting by highest amount
   document.getElementById("sortDateButton").textContent = "Latest";
   document.getElementById("sortAmountButton").textContent = "Highest";
 
-  // Uncheck all type filters
   const checkboxes = document.querySelectorAll(
-    ".filter-section input[type='checkbox']"
+    "#filter input[type='checkbox']"
   );
   checkboxes.forEach((checkbox) => {
     checkbox.checked = false;
   });
 
-  // Clear date range inputs
   document.getElementById("startDate").value = "";
   document.getElementById("endDate").value = "";
 
-  // Fetch transactions with default settings (no filters)
-  fetchTransactions();
+  // Sort cached transactions by descending date and time
+  cachedTransactions.sort(
+    (a, b) => new Date(b.order_executed) - new Date(a.order_executed)
+  );
+
+  renderTransactions(cachedTransactions); // Render all cached transactions
 });
 
+// Fetch transactions once on page load
 window.onload = () => {
   fetchTransactions();
 };
