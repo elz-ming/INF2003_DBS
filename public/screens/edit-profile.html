@@ -1,49 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Profile</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/edit-profile.css"> <!-- Separate CSS file for Edit Profile -->
-</head>
-<body>
-  <div id="background"></div>
-  <header id="header"></header>
-  
-  <main>
-    <section id="edit-profile-header">
-      <div id="edit-profile-picture">
-        <!-- Display current profile picture here -->
-        <img id="current-profile-picture" src='uploads/testpic.jpg' alt="Profile Picture" width="200" height="200">
-      </div>
-      <h2>Edit Profile</h2>
-    </section>
-    
-    <section id="edit-profile-form">
-      <!-- Add enctype="multipart/form-data" for file upload -->
-      <form id="edit-profile" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="edit-name">Name:</label>
-          <input type="text" id="edit-name" name="name" placeholder="Enter your name" required>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/edit-profile.css" />
+  </head>
+  <body>
+    <div id="background"></div>
+    <header id="header"></header>
+    <main>
+      <section id="edit-profile">
+        <form id="edit-profile-form" method="POST" action="/api/edit-profile">
+          <div class="form-group">
+            <label for="edit-name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+            />
+          </div>
 
-        <div class="form-group">
-          <label for="edit-email">Email:</label>
-          <input type="email" id="edit-email" name="email" placeholder="Enter your email" required>
-        </div>
+          <div class="form-group">
+            <label for="edit-email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+            />
+          </div>
 
-        <div class="form-group">
-          <label for="edit-password">Password:</label>
-          <input type="password" id="edit-password" name="password" placeholder="Enter your new password" required>
-        </div>
+          <div class="form-group">
+            <label for="edit-password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="(Optional)"
+            />
+          </div>
 
-        <button type="submit" class="bg-green">Save Changes</button>
-      </form>
-    </section>
-  </main>
+          <div class="form-group">
+            <label for="edit-password">Confirm Password:</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="(Optional)"
+            />
+          </div>
 
-  <footer id="footer"></footer>
-  <script src="/js/edit-profile.js"></script> <!-- Link to a separate JS file for Edit Profile -->
-</body>
+          <button type="submit">Save Changes</button>
+        </form>
+      </section>
+    </main>
+
+    <footer id="footer"></footer>
+    <script src="/js/script.js"></script>
+    <script src="/js/edit-profile.js"></script>
+  </body>
 </html>

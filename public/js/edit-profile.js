@@ -1,37 +1,41 @@
-document.getElementById('edit-profile').addEventListener('submit', async (e) => {
-  e.preventDefault();  // Prevent the default form submission
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("title").textContent = `EDIT`;
 
-  // Collect form data
-  const name = document.getElementById('edit-name').value;
-  const email = document.getElementById('edit-email').value;
-  const password = document.getElementById('edit-password').value;
+  // Get the back button element by its ID
+  const backButton = document.getElementById("back-button");
 
-  // Log the form data for debugging
-  console.log("Form Data: ", { name, email, password });
+  // Add a click event listener to redirect to the homepage
+  backButton.addEventListener("click", () => {
+    window.location.href = "/screens/profile.html"; // Adjust the path to your homepage if needed
+  });
 
-  // Send the form data to the server via a POST request
-  try {
-    const response = await fetch('/api/profile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',  // Specify the content type
-      },
-      body: JSON.stringify({ name, email, password })  // Send the form data as JSON
-    });
+  // Function to fetch the existing user profile data
+  async function fetchProfileData() {
+    try {
+      const response = await fetch("/api/edit-profile", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    // Log the response from the server
-    console.log("Response received from server: ", response);
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error(`Error fetching profile data: ${response.statusText}`);
+      }
 
-    const result = await response.json();  // Parse the JSON response
+      // Parse the JSON data
+      const data = await response.json();
 
-    if (response.ok) {
-      alert('Profile updated successfully!');  // Notify user of success
-    } else {
-      console.log("Error from API: ", result);
-      alert(`Error: ${result.error || 'Failed to update profile'}`);  // Show error message
+      // Populate the input fields with the existing data
+      document.getElementById("name").placeholder = data.name || "";
+      document.getElementById("email").placeholder = data.email || "";
+    } catch (error) {
+      console.error("Failed to fetch profile data:", error);
+      alert("Failed to load profile data. Please try again later.");
     }
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    alert('An error occurred while updating your profile.');  // Handle any errors
   }
+
+  // Call the function to fetch profile data on page load
+  fetchProfileData();
 });

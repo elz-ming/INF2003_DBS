@@ -1,70 +1,103 @@
-const db = require("../db");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt"); // To hash passwords
 const cookie = require("cookie");
-const bcrypt = require("bcrypt");  // Import bcrypt for password hashing
+const db = require("../db"); // Your database connection
 
-const SALT_ROUNDS = 10;  // Define the salt rounds for hashing
+const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 module.exports = async (req, res) => {
-  if (req.method === "POST") {
+  const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
+  const token = cookies.authToken;
+
+  // Check if user is authenticated
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, JWT_SECRET_KEY);
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  const userId = decoded.userId;
+
+  if (req.method === "GET") {
+    // Handle fetching existing user profile data
     try {
-      // Extract form data
-      const { name, email, password } = req.body;
-
-      // Check if token exists in the cookies
-      const cookies = cookie.parse(req.headers.cookie || "");
-      const token = cookies.authToken;
-
-      if (!token) {
-        return res.status(401).json({ error: "Unauthorized, no token provided" });
+      const result = await db.query(
+        "SELECT name, email FROM users WHERE id = $1",
+        [userId]
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
       }
 
-      // Verify the token and get the user ID
-      const decoded = jwt.verify(token, JWT_SECRET_KEY);
-      const userId = decoded.userId;
+      // Return the user's name and email
+      const { name, email } = result.rows[0];
+      res.status(200).json({ name, email });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      res.status(500).json({ error: "Failed to fetch profile data" });
+    }
+  } else if (req.method === "POST") {
+    // Handle updating the user's profile data
+    const { name, email, password, confirmPassword } = req.body;
 
-      // Check if the user is trying to update the password
-      let hashedPassword = null;
-      if (password) {
-        // If the user has entered a new password, hash it
-        hashedPassword = await bcrypt.hash(password, SALT_ROUNDS); // Hash the password
-      }
+    // Validate input
+    if (password && password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
 
-      // Construct the SQL update query, only update the password if it was provided
-      let updateQuery;
-      let updateValues;
-      if (hashedPassword) {
-        updateQuery = `
-          UPDATE users 
-          SET name = $1, email = $2, password = $3
-          WHERE id = $4`;
-        updateValues = [name, email, hashedPassword, userId];
-      } else {
-        updateQuery = `
-          UPDATE users 
-          SET name = $1, email = $2
-          WHERE id = $3`;
-        updateValues = [name, email, userId];
-      }
+    // Prepare fields for update
+    const updateFields = [];
+    const values = [];
+    let index = 1; // For parameterized query placeholders ($1, $2, ...)
 
-      // Execute the query
-      const result = await db.query(updateQuery, updateValues);
+    if (name) {
+      updateFields.push(`name = $${index}`);
+      values.push(name);
+      index++;
+    }
 
-      // Respond with a success message
-      return res.status(200).json({
-        success: true,
-        message: "Profile updated successfully",
-      });
+    if (email) {
+      updateFields.push(`email = $${index}`);
+      values.push(email);
+      index++;
+    }
 
-    } catch (err) {
-      // Log the error for debugging
-      console.error("Error updating profile: ", err);
-      return res.status(500).json({ error: "Internal Server Error" });
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+      updateFields.push(`password = $${index}`);
+      values.push(hashedPassword);
+      index++;
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: "No changes detected" });
+    }
+
+    // Add the userId as the last parameter
+    values.push(userId);
+
+    const updateQuery = `
+      UPDATE users 
+      SET ${updateFields.join(", ")} 
+      WHERE id = $${index}
+    `;
+
+    try {
+      await db.query(updateQuery, values);
+      res.writeHead(302, { Location: "/screens/profile.html" });
+      res.end();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
     }
   } else {
-    // Only allow POST requests
-    res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    res.setHeader("Allow", ["GET", "POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
