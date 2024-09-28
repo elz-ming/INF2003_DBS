@@ -110,7 +110,7 @@ h2 {
 }
 
 #portfolio {
-  height: 800px;
+  height: auto;
 }
 
 #modal {
@@ -218,4 +218,11 @@ h2 {
 #confirm-button.red {
   color: #cb1b1b;
   box-shadow: 0 4px 4px #cb1b1b;
+}
+
+#portfolio-message {
+  width: 100%;
+  text-align: center;
+  font-size: 4rem;
+  color: #ffffff;
 }

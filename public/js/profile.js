@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   let walletBalance = 0;
+  let userData;
+  let portfolioData = [];
 
   // Fetch the profile data from the API
   fetch("/api/profile")
@@ -11,13 +13,21 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .then((data) => {
-      if (!data.wallet_balance) {
-        console.error("Wallet balance not found.");
+      if (!data.userData) {
+        console.error("User Data not found.");
         return;
       }
 
+      if (!data.portfolioData) {
+        console.error("Portfolio Data not found.");
+        return;
+      }
+
+      userData = data.userData;
+      portfolioData = data.portfolioData || [];
+
       // Convert wallet_balance to a number, in case it's a string or another type
-      walletBalance = parseFloat(data.wallet_balance);
+      walletBalance = parseFloat(userData.wallet_balance);
 
       if (isNaN(walletBalance)) {
         console.error("Wallet balance is not a valid number.");
@@ -25,10 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Display the name and wallet balance on the profile page
-      document.getElementById("profile-name").textContent = data.name;
+      document.getElementById("profile-name").textContent = userData.name;
       document.getElementById(
         "wallet-balance"
       ).textContent = `$${walletBalance.toFixed(2)}`;
+
+      // Handle portfolio section rendering based on data availability
+      renderPortfolioSection(portfolioData);
     })
     .catch((error) => {
       console.error("Error fetching profile data:", error);
@@ -123,5 +136,100 @@ document.addEventListener("DOMContentLoaded", function () {
   // Assuming you have a close button in your modal
   if (closeButton) {
     closeButton.addEventListener("click", closeModal);
+  }
+
+  // ================= //
+  // ===== CHART ===== //
+  // ================= //
+  function renderPortfolioSection(portfolioData) {
+    const portfolioSection = document.getElementById("portfolio");
+
+    if (!portfolioData || portfolioData.length === 0) {
+      // If empty, display a message to prompt the user to make their first purchase
+      const message = document.createElement("p");
+      message.id = "portfolio-message";
+      message.textContent = "Make your first purchase now!";
+      portfolioSection.appendChild(message);
+      return;
+    }
+
+    // If there is data, create and append the canvas element for the chart
+    const canvas = document.createElement("canvas");
+    canvas.id = "portfolio-chart";
+    portfolioSection.appendChild(canvas);
+
+    // Prepare data for the pie chart
+    const labels = portfolioData.map((item) => item.ticker);
+    const data = portfolioData.map(
+      (item) => item.quantity * item.regularmarketprice
+    );
+
+    // Define a palette of colors to be used for up to 5 stocks
+    const colorPalette = [
+      "rgba(75, 192, 192, 0.7)", // Teal
+      "rgba(54, 162, 235, 0.7)", // Blue
+      "rgba(255, 206, 86, 0.7)", // Yellow
+      "rgba(153, 102, 255, 0.7)", // Purple
+      "rgba(255, 99, 132, 0.7)", // Pink
+    ];
+
+    // Slice the color palette to match the number of stocks dynamically
+    const backgroundColor = colorPalette.slice(0, labels.length);
+
+    // Border colors corresponding to the background colors
+    const borderColor = backgroundColor.map((color) =>
+      color.replace(/0\.7\)$/, "1)")
+    );
+
+    // Create the Pie chart using Chart.js
+    const ctx = canvas.getContext("2d");
+    new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Portfolio Distribution",
+            data,
+            backgroundColor,
+            borderColor,
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              color: "#fff",
+              font: {
+                size: 14,
+              },
+            },
+          },
+          tooltip: {
+            enabled: true,
+          },
+          datalabels: {
+            color: "#fff",
+            font: {
+              size: 16,
+            },
+            formatter: (value, context) => {
+              // Calculate the percentage of the total for each slice
+              const total = context.dataset.data.reduce(
+                (acc, val) => acc + val,
+                0
+              );
+              const percentage = ((value / total) * 100).toFixed(1); // Round to 1 decimal place
+              return `${percentage}%`; // Display percentage
+            },
+          },
+        },
+      },
+      plugins: [ChartDataLabels],
+    });
   }
 });

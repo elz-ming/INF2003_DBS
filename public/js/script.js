@@ -191,8 +191,9 @@ function setActiveNavItem() {
     ) {
       item.classList.add("active");
     } else if (
-      normalizedPath.includes("/screens/profile.html") &&
-      linkPath === "/screens/profile.html"
+      normalizedPath.includes("/screens/profile.html") ||
+      (normalizedPath.includes("/screens/edit-profile.html") &&
+        linkPath === "/screens/profile.html")
     ) {
       item.classList.add("active");
     } else {

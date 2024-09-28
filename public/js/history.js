@@ -23,7 +23,7 @@ function renderTransactions(transactions) {
 
   if (transactions.length === 0) {
     const noTransactions = document.createElement("div");
-    noTransactions.classList.add("no-transactions");
+    noTransactions.id = "no-transactions";
     noTransactions.textContent = "No transactions found.";
     container.appendChild(noTransactions);
     return;
