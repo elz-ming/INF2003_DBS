@@ -38,8 +38,9 @@ CREATE TABLE IF NOT EXISTS public.prices
     low numeric(10,2),
     close numeric(10,2),
     volume bigint,
-    CONSTRAINT price_pkey PRIMARY KEY (id)
-);
+    CONSTRAINT price_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_ticker_date UNIQUE (ticker, date)
+)
 
 CREATE TABLE IF NOT EXISTS public.sentiments
 (

@@ -41,8 +41,9 @@ const insertPriceData = async (
       (ticker, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
       regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, 
       date, open, high, low, close, volume) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      ON CONFLICT (ticker, date) 
+      DO NOTHING`,
       [
         ticker,
         regularMarketPrice,
