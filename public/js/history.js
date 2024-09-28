@@ -41,7 +41,7 @@ function renderTransactions(transactions) {
     dateGroup.appendChild(dateHeader);
 
     groupedTransactions[date].forEach((transaction) => {
-      const validTypes = ["buy", "sell", "withdrawal", "deposit"];
+      const validTypes = ["buy", "sell", "withdraw", "deposit"];
       if (validTypes.includes(transaction.transaction_type.toLowerCase())) {
         const transactionCard = document.createElement("div");
         transactionCard.classList.add(
@@ -108,12 +108,12 @@ function displayPopup(transaction) {
     transaction.transaction_type.slice(1).toLowerCase();
   modalType.innerText = `${transactionType}`;
 
-  modalTitle.classList.remove("buy", "sell", "deposit", "withdrawal");
+  modalTitle.classList.remove("buy", "sell", "deposit", "withdraw");
   modalTitle.classList.add(transaction.transaction_type.toLowerCase());
 
   let content = ``;
   if (
-    transaction.transaction_type.toLowerCase() === "withdrawal" ||
+    transaction.transaction_type.toLowerCase() === "" ||
     transaction.transaction_type.toLowerCase() === "deposit"
   ) {
     content += `

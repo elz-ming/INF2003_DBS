@@ -6,7 +6,7 @@ main {
   display: flex;
   justify-content: space-around;
   width: 100%;
-  font-size: 3rem;
+  font-size: 4rem;
   border-bottom: 1px solid white;
 }
 
@@ -74,12 +74,12 @@ a {
 
 .stock h2 {
   text-align: left;
-  font-size: 3rem;
+  font-size: 6rem;
 }
 
 .stock h3 {
   text-align: left;
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 .sentiment,
@@ -92,8 +92,8 @@ a {
 
 .sentiment-circle {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 12rem;
+  height: 12rem;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -111,7 +111,7 @@ a {
   background: conic-gradient(#19a838 calc(var(--value) * 100%), transparent 0%);
   mask: radial-gradient(
     closest-side,
-    transparent 15px,
+    transparent 5rem,
     black 1px,
     black
   ); /* Creates the line effect */
@@ -119,10 +119,10 @@ a {
 
 .sentiment-value {
   color: #000000;
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 .price {
   color: #cb1b1b;
-  font-size: 3rem;
+  font-size: 4rem;
 }

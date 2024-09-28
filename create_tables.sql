@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS public.money_transactions (
     amount float NOT NULL,
     order_executed timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     user_id uuid NOT NULL,
-    type varchar(50) NOT NULL CHECK (type IN ('deposit', 'withdrawal')),
+    type varchar(50) NOT NULL CHECK (type IN ('deposit', 'withdraw')),
     bank varchar(50) NOT NULL,
     CONSTRAINT money_transactions_pkey PRIMARY KEY (id),
     CONSTRAINT fk_user
