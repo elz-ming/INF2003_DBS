@@ -114,13 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .then((data) => {
-      if (!data.wallet_balance) {
+      if (!data.userData.wallet_balance) {
         console.error("Wallet balance not found.");
         return;
       }
 
       // Convert wallet_balance to a number, in case it's a string or another type
-      walletBalance = parseFloat(data.wallet_balance);
+      walletBalance = parseFloat(data.userData.wallet_balance);
     })
     .catch((error) => {
       console.error("Error fetching profile data:", error);
