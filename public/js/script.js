@@ -95,7 +95,6 @@ function configureHeader() {
     "/screens/history-detail.html",
     "/screens/stock-detail.html",
     "/screens/edit-profile.html",
-    "/screens/admin.html",
   ];
 
   const isMainPage = mainPages.includes(currentPath);
