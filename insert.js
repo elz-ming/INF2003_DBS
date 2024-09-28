@@ -4,7 +4,7 @@ const db = require("./db");
 const insertSentimentData = async (ticker, date, sentimentValue) => {
   try {
     await db.query(
-      `INSERT INTO sentiment_analysis (ticker, date, sentiment)
+      `INSERT INTO sentiments (ticker, date, sentiment)
        VALUES ($1, $2, $3)
        ON CONFLICT (ticker) 
        DO UPDATE SET sentiment = EXCLUDED.sentiment, date = $2`,
@@ -37,7 +37,7 @@ const insertPriceData = async (
 ) => {
   try {
     await db.query(
-      `INSERT INTO price 
+      `INSERT INTO prices 
       (ticker, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
       regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, 
       date, open, high, low, close, volume) 
@@ -81,7 +81,7 @@ const insertNewsData = async (
 ) => {
   try {
     await db.query(
-      `INSERT INTO stock_news (ticker, url, img, title, text, source, type, time, date, ago)
+      `INSERT INTO news (ticker, url, img, title, text, source, type, time, date, ago)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        ON CONFLICT (ticker, url) 
        DO NOTHING`,
