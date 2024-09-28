@@ -95,6 +95,7 @@ function configureHeader() {
     "/screens/history-detail.html",
     "/screens/stock-detail.html",
     "/screens/edit-profile.html",
+    "/screens/admin.html",
   ];
 
   const isMainPage = mainPages.includes(currentPath);
@@ -191,8 +192,9 @@ function setActiveNavItem() {
     ) {
       item.classList.add("active");
     } else if (
-      normalizedPath.includes("/screens/profile.html") &&
-      linkPath === "/screens/profile.html"
+      normalizedPath.includes("/screens/profile.html") ||
+      (normalizedPath.includes("/screens/edit-profile.html") &&
+        linkPath === "/screens/profile.html")
     ) {
       item.classList.add("active");
     } else {

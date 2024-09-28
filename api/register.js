@@ -6,8 +6,6 @@ const db = require("../db"); // Your database connection
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-
 module.exports = async (req, res) => {
   if (req.method === "POST") {
     const { name, email, password, confirmPassword } = req.body;
