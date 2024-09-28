@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     try {
       // Query to fetch stock tickers from the stockdata table
       const result = await db.query(`
-        SELECT stocks.ticker, stocks.longname, sentiments.sentiment, latest_price.regularmarketprice 
+        SELECT DISTINCT stocks.ticker, stocks.longname, sentiments.sentiment, latest_price.regularmarketprice 
         FROM stocks
         JOIN sentiments
         ON stocks.ticker = sentiments.ticker
@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
           ) latest_date 
           ON prices.ticker = latest_date.ticker 
           AND prices.date = latest_date.date
+          ORDER BY prices.date DESC
         ) latest_price
         ON stocks.ticker = latest_price.ticker;
       `);
