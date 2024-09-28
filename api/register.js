@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt"); // To hash passwords
 const cookie = require("cookie");
 const db = require("../db"); // Your database connection
-const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 
+const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 module.exports = async (req, res) => {
