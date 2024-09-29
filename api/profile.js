@@ -112,6 +112,50 @@ module.exports = async (req, res) => {
     }
 
     // Handle unsupported methods
+  } else if (req.method === "DELETE") {
+    // Handle DELETE request - Delete User Account
+    try {
+      // Parse the cookie to get the token
+      const cookies = cookie.parse(req.headers.cookie || "");
+      const token = cookies.authToken;
+
+      if (!token) {
+        return res
+          .writeHead(401, { "Content-Type": "application/json" })
+          .end(JSON.stringify({ error: "Unauthorized" }));
+      }
+
+      // Verify the token and extract the userId
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      const userId = decoded.userId;
+
+      // Delete the user from the database
+      await db.query("DELETE FROM users WHERE id = $1", [userId]);
+
+      // Clear the authentication cookie to log out the user
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("authToken", "", {
+          httpOnly: true,
+          path: "/",
+          expires: new Date(0), // Expire the cookie immediately
+          sameSite: "Strict",
+        })
+      );
+
+      // Respond with success message
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: true,
+          message: "Account deleted successfully. Logged out.",
+        })
+      );
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
   } else {
     res.setHeader("Allow", ["GET", "POST"]);
     res.writeHead(405, `Method ${req.method} Not Allowed`);

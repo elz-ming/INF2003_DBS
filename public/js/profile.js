@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const depositButton = document.getElementById("deposit");
   const withdrawButton = document.getElementById("withdraw");
   const confirmButton = document.getElementById("confirm-button");
+  const deleteButton = document.getElementById("delete-profile-button");
   const modal = document.getElementById("modal");
   const modalBackdrop = document.getElementById("modal-backdrop");
   const modalTitle = document.getElementById("modal-title");
@@ -63,6 +64,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   withdrawButton.addEventListener("click", () => {
     showModal("withdraw");
+  });
+
+  deleteButton.addEventListener("click", () => {
+    if (confirm("Are you sure you want to delete your profile?")) {
+      fetch("/api/profile", {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("Profile deleted successfully!");
+            window.location.href = "/"; // Redirect to the homepage
+          } else {
+            alert("Failed to delete profile.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting profile:", error);
+        });
+    }
   });
 
   confirmButton.addEventListener("click", async () => {
