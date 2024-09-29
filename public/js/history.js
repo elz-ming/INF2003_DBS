@@ -113,7 +113,7 @@ function displayPopup(transaction) {
 
   let content = ``;
   if (
-    transaction.transaction_type.toLowerCase() === "" ||
+    transaction.transaction_type.toLowerCase() === "withdraw" ||
     transaction.transaction_type.toLowerCase() === "deposit"
   ) {
     content += `
