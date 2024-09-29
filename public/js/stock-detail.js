@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   let pricePerShare = 0;
   let walletBalance = 0;
+  let stockQuantity = 0;
 
   // Get the back button element by its ID
   const backButton = document.getElementById("back-button");
@@ -119,8 +120,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      if (!data.portfolioData) {
+        console.error("Portfolio data not found.");
+        return;
+      }
+
       // Convert wallet_balance to a number, in case it's a string or another type
       walletBalance = parseFloat(data.userData.wallet_balance);
+      stock = data.portfolioData.find((item) => item.ticker === ticker);
+      stockQuantity = stock.quantity || 0;
     })
     .catch((error) => {
       console.error("Error fetching profile data:", error);
@@ -135,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const amountInput = document.getElementById("amount-input");
   const closeButton = document.getElementById("modal-close");
   const modalBalance = document.getElementById("modal-balance");
+  const modalQuantity = document.getElementById("modal-quantity");
   const modalAmount = document.getElementById("modal-amount");
 
   sellButton.addEventListener("click", () => {
@@ -196,6 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modalAmount.textContent = "$0.00";
     modalBalance.textContent = `$${walletBalance.toFixed(2)}`;
+    modalQuantity.textContent = `${stockQuantity}`;
     if (action === "sell") {
       modalTitle.classList.add("bg-pink");
       amountInput.classList.add("pink");
