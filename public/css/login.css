@@ -61,7 +61,8 @@ footer {
 }
 
 .login-container p {
-  font-size: 2rem;
+  margin-top: 4rem;
+  font-size: 4rem;
 }
 
 .login-container a {
