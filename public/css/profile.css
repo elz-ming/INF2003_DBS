@@ -67,14 +67,38 @@ h2 {
   text-decoration: none;
 }
 
-#profile-button {
+#profile-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+}
+
+#profile-buttons .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
   padding: 3rem;
   border-radius: 20px;
-  background-color: #9245de;
   font-size: 4rem;
+  cursor: pointer;
+}
+
+#profile-buttons a {
+  text-align: center;
+  flex: 1;
+  height: 100%;
+}
+
+#edit-profile-button {
+  background-color: #edae49;
+}
+
+#delete-profile-button {
+  background-color: #e54b4b;
 }
 
 #wallet-balance-container {
@@ -107,6 +131,7 @@ h2 {
   font-size: 6rem;
   border-radius: 10px;
   color: white;
+  cursor: pointer;
 }
 
 #portfolio {
