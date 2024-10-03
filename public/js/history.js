@@ -198,9 +198,20 @@ function filterTransactions(transactions, selectedTypes, startDate, endDate) {
       selectedTypes.length === 0 || selectedTypes.includes(transactionType);
 
     const transactionDate = new Date(transaction.order_executed);
+
+    // Set startDate to 00:00 of the selected day
+    const startDateTime = startDate
+      ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+      : null;
+
+    // Set endDate to 23:59:59 of the selected day
+    const endDateTime = endDate
+      ? new Date(new Date(endDate).setHours(23, 59, 59, 999))
+      : null;
+
     const isInDateRange =
-      (!startDate || transactionDate >= new Date(startDate)) &&
-      (!endDate || transactionDate <= new Date(endDate));
+      (!startDateTime || transactionDate >= startDateTime) &&
+      (!endDateTime || transactionDate <= endDateTime);
 
     return inSelectedTypes && isInDateRange;
   });
