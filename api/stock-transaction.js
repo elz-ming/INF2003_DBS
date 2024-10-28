@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
-const db = require("../db"); // Assuming you have a database setup
+const db = require("../db");
+const Portfolio = require("../models/Portfolio");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -76,6 +77,19 @@ module.exports = async (req, res) => {
         `;
         const portfolioValues = [userId, stockId, quantity];
 
+        // Update portfolio in MongoDB
+        const mongoSell = await Portfolio.findOneAndUpdate(
+          { user_id: userId, stock_id: stockId },
+          { $inc: { quantity: -quantity } },
+          { new: true }
+        );
+
+        if (!mongoSell || mongoSell.quantity < 0) {
+          return res
+            .status(400)
+            .json({ error: "Insufficient stock quantity to sell." });
+        }
+
         // Execute the queries concurrently using Promise.all
         const [sellResult, transactionResult, updateResult] = await Promise.all(
           [
@@ -122,6 +136,13 @@ module.exports = async (req, res) => {
           DO UPDATE SET quantity = portfolios.quantity + EXCLUDED.quantity;
         `;
         const portfolioValues = [userId, stockId, quantity];
+
+        // Insert or update portfolio record in MongoDB
+        const mongoBuy = await Portfolio.findOneAndUpdate(
+          { user_id: userId, stock_id: stockId },
+          { $inc: { quantity } },
+          { upsert: true, new: true }
+        );
 
         // Execute the queries concurrently using Promise.all
         const [buyResult, transactionResult, portfolioResult] =
