@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
-const db = require("../db"); // Import the database connection
+const db = require("../db"); // Import the SQL database connection
+const StockTransaction = require("../models/Stock-Transaction"); // Import the StockTransaction model
+const MoneyTransaction = require("../models/Money-Transaction"); // Import the MoneyTransaction model
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -13,30 +15,69 @@ module.exports = async (req, res) => {
       const decoded = jwt.verify(token, JWT_SECRET_KEY);
       const userId = decoded.userId;
 
-      let query = `
-        SELECT id, amount, order_executed, transaction_type, price, quantity, ticker_code, stock_name, bank
-        FROM (
-          SELECT st.id, st.amount, st.order_executed, st.type AS transaction_type, st.price, st.quantity, 
-                 s.ticker AS ticker_code, s.longname AS stock_name, NULL AS bank
-          FROM stock_transactions st
-          LEFT JOIN stocks s ON st.stock_id = s.id
-          WHERE st.user_id = $1
-          
-          UNION ALL
-          
-          SELECT mt.id, mt.amount, mt.order_executed, mt.type AS transaction_type, NULL AS price, NULL AS quantity, 
-                 NULL AS ticker_code, NULL AS stock_name, mt.bank
-          FROM money_transactions mt
-          WHERE mt.user_id = $1
-        ) AS combined_transactions
-        WHERE 1 = 1
-        ORDER BY order_executed DESC;  -- Order by descending date
+      // Fetch stock transactions from MongoDB
+      const stockTransactions = await StockTransaction.find({
+        user_id: userId,
+      });
+
+      // Fetch money transactions from MongoDB
+      const moneyTransactions = await MoneyTransaction.find({
+        user_id: userId,
+      });
+
+      // Create an array to hold stock IDs from the stock transactions
+      const stockIds = stockTransactions.map((tx) => tx.stock_id);
+
+      // Fetch stock details from SQL
+      const stockDetailsQuery = `
+        SELECT id, ticker, longname 
+        FROM stocks 
+        WHERE id = ANY($1::uuid[])
       `;
+      const stockDetailsValues = [stockIds];
+      const stockDetailsResult = await db.query(
+        stockDetailsQuery,
+        stockDetailsValues
+      );
+      const stockDetailsMap = new Map(
+        stockDetailsResult.rows.map((stock) => [stock.id, stock])
+      );
 
-      const values = [userId];
+      // Combine stock transactions with stock details
+      const combinedStockTransactions = stockTransactions.map((tx) => ({
+        id: tx._id,
+        amount: tx.amount,
+        order_executed: tx.order_executed,
+        transaction_type: tx.type,
+        price: tx.price,
+        quantity: tx.quantity,
+        ticker_code: stockDetailsMap.get(tx.stock_id)?.ticker || null,
+        stock_name: stockDetailsMap.get(tx.stock_id)?.longname || null,
+        bank: null, // No bank info for stock transactions
+      }));
 
-      const result = await db.query(query, values);
-      res.status(200).json(result.rows);
+      // Combine with money transactions
+      const combinedTransactions = [
+        ...combinedStockTransactions,
+        ...moneyTransactions.map((tx) => ({
+          id: tx._id,
+          amount: tx.amount,
+          order_executed: tx.order_executed,
+          transaction_type: tx.type,
+          price: null, // No price for money transactions
+          quantity: null, // No quantity for money transactions
+          ticker_code: null, // No ticker for money transactions
+          stock_name: null, // No stock name for money transactions
+          bank: tx.bank, // Bank info from money transaction
+        })),
+      ];
+
+      // Sort combined transactions by order_executed descending
+      combinedTransactions.sort(
+        (a, b) => new Date(b.order_executed) - new Date(a.order_executed)
+      );
+
+      res.status(200).json(combinedTransactions);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Server Error", message: err.message });

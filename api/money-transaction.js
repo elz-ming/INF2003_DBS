@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const db = require("../db"); // Assuming you have a database setup
+const MoneyTransaction = require("../models/Money-Transaction");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -23,6 +24,14 @@ module.exports = async (req, res) => {
       const transactionValues = [amount, userId];
       await db.query(insertTransactionQuery, transactionValues);
 
+      // Insert money transaction for deposit
+      const mongoDepositTransaction = await MoneyTransaction.create({
+        amount: amount,
+        user_id: userId,
+        type: "deposit",
+        bank: "ocbc",
+      });
+
       return res.status(200).json({ success: true });
     } else if (action === "withdraw") {
       const withdrawQuery =
@@ -34,6 +43,14 @@ module.exports = async (req, res) => {
         "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdraw', 'ocbc')";
       const transactionValues = [amount, userId];
       await db.query(insertTransactionQuery, transactionValues);
+
+      // Insert money transaction for withdrawal
+      const mongoWithdrawTransaction = await MoneyTransaction.create({
+        amount: amount,
+        user_id: userId,
+        type: "withdraw",
+        bank: "ocbc",
+      });
 
       return res.status(200).json({ success: true });
     }

@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const db = require("../db");
 const Portfolio = require("../models/Portfolio");
+const StockTransaction = require("../models/Stock-Transaction");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -77,18 +78,34 @@ module.exports = async (req, res) => {
         `;
         const portfolioValues = [userId, stockId, quantity];
 
-        // Update portfolio in MongoDB
+        const portfolio = await Portfolio.findOne({
+          user_id: userId,
+          stock_id: stockId,
+          quantity: { $gte: quantity }, // Ensure quantity is sufficient
+        });
+
+        if (!portfolio) {
+          return res
+            .status(400)
+            .json({ error: "Insufficient stock quantity to sell." });
+        }
+
+        // Proceed with inserting the sell transaction record
+        const mongoSellTransaction = await StockTransaction.create({
+          amount: amount,
+          user_id: userId, // This should be an ObjectId
+          type: "sell",
+          stock_id: stockId, // This should also be an ObjectId
+          price: price,
+          quantity: quantity,
+        });
+
+        // Update portfolio to decrement the quantity
         const mongoSell = await Portfolio.findOneAndUpdate(
           { user_id: userId, stock_id: stockId },
           { $inc: { quantity: -quantity } },
           { new: true }
         );
-
-        if (!mongoSell || mongoSell.quantity < 0) {
-          return res
-            .status(400)
-            .json({ error: "Insufficient stock quantity to sell." });
-        }
 
         // Execute the queries concurrently using Promise.all
         const [sellResult, transactionResult, updateResult] = await Promise.all(
@@ -127,6 +144,16 @@ module.exports = async (req, res) => {
           VALUES ($1, $2, 'buy', $3, $4, $5)
         `;
         const transactionValues = [amount, userId, stockId, price, quantity];
+
+        // Insert buy transaction record in MongoDB
+        const mongoBuyTransaction = await StockTransaction.create({
+          amount: amount,
+          user_id: userId, // This should be an ObjectId
+          type: "buy",
+          stock_id: stockId, // This should also be an ObjectId
+          price: price,
+          quantity: quantity,
+        });
 
         // Insert or update portfolio record
         const insertPortfolioQuery = `
