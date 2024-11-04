@@ -6,8 +6,8 @@ const insertSentimentData = async (ticker, date, sentimentValue) => {
     await db.query(
       `INSERT INTO sentiments (ticker, date, sentiment)
        VALUES ($1, $2, $3)
-       ON CONFLICT (ticker) 
-       DO UPDATE SET sentiment = EXCLUDED.sentiment, date = $2`,
+       ON CONFLICT (ticker, date) 
+       DO UPDATE SET sentiment = EXCLUDED.sentiment`,
       [ticker, date, sentimentValue]
     );
     console.log(
@@ -18,6 +18,7 @@ const insertSentimentData = async (ticker, date, sentimentValue) => {
     throw err;
   }
 };
+
 
 // Function to insert price data into the database
 const insertPriceData = async (
