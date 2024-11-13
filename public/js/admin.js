@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function fetchData() {
   console.log("Fetch Data button clicked");
   try {
-    const response = await fetch("/api/combinedStockAPI");
+    const response = await fetch("/api/fetch-stock");
     if (!response.ok) throw new Error("Network response was not ok");
 
     const data = await response.json();
