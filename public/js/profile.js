@@ -85,44 +85,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  confirmButton.addEventListener("click", async () => {
-    const action = confirmButton.textContent.toLowerCase();
-    const amount = parseFloat(amountInput.value);
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount.");
-      return;
-    }
+ confirmButton.addEventListener("click", async () => {
+  const action = confirmButton.textContent.toLowerCase();
+  const amount = parseFloat(amountInput.value);
+  
+  if (isNaN(amount) || amount <= 0) {
+    alert("Please enter a valid amount.");
+    return;
+  }
 
-    if (walletBalance < amount && action === "withdraw") {
-      alert("Insufficient funds.");
-      return;
-    }
+  try {
+    const response = await fetch("/api/money-transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action, amount }),
+    });
 
-    try {
-      const response = await fetch("/api/money-transaction", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ action, amount }),
-      });
+    // Parse the response to check for specific error messages
+    const responseData = await response.json();
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
+    if (!response.ok) {
+      if (responseData.error === "Transaction is voided, withdrawal amount exceeds wallet balance") {
+        alert(responseData.error); // Show specific alert for insufficient funds
+      } else {
+        alert("An error occurred. Please try again.");
       }
-
-      // Show success message if the transaction is successful
-      alert("Transaction successful!");
-
-      // Refresh the page to update the wallet balance
-      location.reload();
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      closeModal();
+      return;
     }
-  });
+
+    // Show success message if the transaction is successful
+    alert("Transaction successful!");
+    location.reload(); // Refresh the page to update the wallet balance
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred. Please try again.");
+  } finally {
+    closeModal();
+  }
+});
 
   function showModal(action) {
     modal.style.display = "flex";

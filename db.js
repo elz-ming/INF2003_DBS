@@ -5,7 +5,6 @@ require("dotenv").config(); // Load environment variables from .env file
 // Create a new pool of connections using environment variables
 const postgresPool = new Pool({
   connectionString: process.env.POSTGRES_URL,
-  // Explicitly set SSL options based on the environment
   ssl:
     process.env.NODE_ENV === "production"
       ? { rejectUnauthorized: false }
@@ -18,6 +17,17 @@ postgresPool.on("error", (err) => {
   process.exit(-1);
 });
 
+// Function to close the PostgreSQL connection pool
+async function endPostgresConnection() {
+  try {
+    await postgresPool.end();
+    console.log("PostgreSQL connection pool closed.");
+  } catch (error) {
+    console.error("Error closing PostgreSQL connection pool:", error);
+  }
+}
+
+// MongoDB connection function
 async function connectToMongoDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
@@ -31,13 +41,12 @@ async function connectToMongoDB() {
   }
 }
 
+// Connect to MongoDB
 connectToMongoDB();
 
-// Export the query function for executing SQL commands
+// Export the query function for PostgreSQL and the end function
 module.exports = {
-  // PostgreSQL query function
   query: (text, params) => postgresPool.query(text, params),
-
-  // MongoDB connection (useful if you need to access it elsewhere)
+  end: endPostgresConnection, // Added end function to close PostgreSQL connections
   mongoose,
 };
