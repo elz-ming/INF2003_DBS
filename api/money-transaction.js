@@ -21,13 +21,11 @@ module.exports = async (req, res) => {
       if (action === "deposit") {
         console.log("Performing deposit...");
 
-        const depositQuery =
-          "UPDATE users SET wallet_balance = wallet_balance + $1 WHERE id = $2";
+        const depositQuery = "UPDATE users SET wallet_balance = wallet_balance + $1 WHERE id = $2";
         const depositValues = [amount, userId];
         await db.query(depositQuery, depositValues);
 
-        const insertTransactionQuery =
-          "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'deposit', 'ocbc')";
+        const insertTransactionQuery = "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'deposit', 'ocbc')";
         const transactionValues = [amount, userId];
         await db.query(insertTransactionQuery, transactionValues);
 
@@ -38,29 +36,28 @@ module.exports = async (req, res) => {
       } else if (action === "withdraw") {
         console.log("Performing withdrawal...");
 
-        // Check if the user has sufficient balance
-        const balanceCheckQuery = "SELECT wallet_balance FROM users WHERE id = $1";
+        // Explicitly lock the row for the current user to prevent concurrent modifications
+        const balanceCheckQuery = "SELECT wallet_balance FROM users WHERE id = $1 FOR UPDATE";
         const balanceCheckResult = await db.query(balanceCheckQuery, [userId]);
         const currentBalance = balanceCheckResult.rows[0]?.wallet_balance || 0;
 
         console.log(`Current balance: ${currentBalance}, Withdrawal amount: ${amount}`);
 
+        // Check if user has sufficient balance
         if (currentBalance < amount) {
           console.error("Insufficient balance, triggering rollback");
           await db.query("ROLLBACK");
           console.log("Transaction rolled back due to insufficient balance");
 
-          // Move the return after the rollback logs
           return res.status(400).json({ error: "Transaction is voided, withdrawal amount exceeds wallet balance" });
         }
 
-        const withdrawQuery =
-          "UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2";
+        // Proceed with withdrawal if balance is sufficient
+        const withdrawQuery = "UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2";
         const withdrawValues = [amount, userId];
         await db.query(withdrawQuery, withdrawValues);
 
-        const insertTransactionQuery =
-          "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdraw', 'ocbc')";
+        const insertTransactionQuery = "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdraw', 'ocbc')";
         const transactionValues = [amount, userId];
         await db.query(insertTransactionQuery, transactionValues);
 
