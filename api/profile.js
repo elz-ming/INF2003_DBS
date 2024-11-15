@@ -91,11 +91,95 @@ module.exports = async (req, res) => {
       res.end(JSON.stringify({ error: "Internal Server Error" }));
     }
   } else if (req.method === "POST") {
-    // Handle POST request for profile update
-    // ... [keep this section unchanged]
+    try {
+      // Parse the cookie to get the token
+      const cookies = cookie.parse(req.headers.cookie || "");
+      const token = cookies.authToken;
+
+      if (!token) {
+        return res
+          .writeHead(401, { "Content-Type": "application/json" })
+          .end(JSON.stringify({ error: "Unauthorized" }));
+      }
+
+      // Verify the token and extract the userId
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      const userId = decoded.userId;
+
+      // Parse request body to get the updated profile information
+      const { name, email, password } = req.body;
+
+      if (!name || !email || !password) {
+        return res
+          .writeHead(400, { "Content-Type": "application/json" })
+          .end(
+            JSON.stringify({ error: "Name, email, and password are required" })
+          );
+      }
+
+      // Update the user profile in the database
+      await db.query(
+        "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4",
+        [name, email, password, userId]
+      );
+
+      // Respond with success message
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: true,
+          message: "Profile updated successfully",
+        })
+      );
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
   } else if (req.method === "DELETE") {
     // Handle DELETE request - Delete User Account
-    // ... [keep this section unchanged]
+    try {
+      // Parse the cookie to get the token
+      const cookies = cookie.parse(req.headers.cookie || "");
+      const token = cookies.authToken;
+
+      if (!token) {
+        return res
+          .writeHead(401, { "Content-Type": "application/json" })
+          .end(JSON.stringify({ error: "Unauthorized" }));
+      }
+
+      // Verify the token and extract the userId
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      const userId = decoded.userId;
+
+      // Delete the user from the database
+      await db.query("DELETE FROM users WHERE id = $1", [userId]);
+
+      // Clear the authentication cookie to log out the user
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("authToken", "", {
+          httpOnly: true,
+          path: "/",
+          expires: new Date(0), // Expire the cookie immediately
+          sameSite: "Strict",
+        })
+      );
+
+      // Respond with success message
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: true,
+          message: "Account deleted successfully. Logged out.",
+        })
+      );
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
   } else {
     res.setHeader("Allow", ["GET", "POST"]);
     res.writeHead(405, `Method ${req.method} Not Allowed`);
