@@ -31,6 +31,7 @@ const NewsSchema = new Schema({
 
 // Main Stock Schema
 const StockSchema = new Schema({
+  _id: { type: String, required: true },
   ticker: { type: String, required: true },
   longname: { type: String, required: true },
   sentiment: SentimentSchema,

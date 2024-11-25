@@ -2,6 +2,7 @@ const db = require("../db"); // PostgreSQL connection
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const Portfolio = require("../models/Portfolio"); // MongoDB Portfolio model
+const Stocks = require("../models/Stocks"); // MongoDB Portfolio model
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Ensure this is set in your environment
 
@@ -34,56 +35,67 @@ module.exports = async (req, res) => {
 
       const userData = userDataResult.rows[0];
 
+      // ====== Portfolio-related data retrieval ====== //
+
       // Step 1: Fetch MongoDB portfolio data for the user
       const mongoPortfolio = await Portfolio.find({ user_id: userId });
 
       if (!mongoPortfolio || mongoPortfolio.length === 0) {
         return res.status(200).json({
-          message: "No MongoDB portfolio data available.",
+          userData,
+          combinedPortfolio: [],
+          message: "No portfolio data found for this user.",
         });
       }
 
-      // Step 2: Extract `stock_id` values from MongoDB data
+      // Step 2: Extract stock IDs from the MongoDB portfolio
       const stockIds = mongoPortfolio.map((item) => item.stock_id);
 
-      // Step 3: Perform a PostgreSQL query using `stock_id` values from MongoDB
-      const portfolioData = await db.query(
-        `
-        SELECT s.ticker, s.id AS stock_id, pr.regularmarketprice
-        FROM stocks s
-        JOIN prices pr ON pr.ticker = s.ticker
-        WHERE s.id = ANY($1)
-        AND pr.date = (
-          SELECT MAX(date)
-          FROM prices
-          WHERE ticker = s.ticker
-        );
-        `,
-        [stockIds]
-      );
+      // Debug: Log stockIds to verify correctness
+      console.log("Fetching stocks for IDs:", stockIds);
 
-      // Step 4: Merge PostgreSQL and MongoDB data
-      const combinedPortfolio = mongoPortfolio.map((mongoItem) => {
-        const pgItem = portfolioData.rows.find(
-          (pgRow) => pgRow.stock_id === mongoItem.stock_id
-        );
+      // Step 3: Fetch stock data from MongoDB
+      // Ensure all stockIds are treated as strings
+      const stocks = await Stocks.find({ _id: { $in: stockIds } });
+
+      // Step 4: Merge portfolio and stock data
+      const stockMap = stocks.reduce((acc, stock) => {
+        acc[stock._id] = stock; // Use string-based IDs as keys
+        return acc;
+      }, {});
+
+      const combinedPortfolio = mongoPortfolio.map((portfolioItem) => {
+        const stock = stockMap[portfolioItem.stock_id];
+        if (!stock) {
+          console.warn(
+            `Stock data not found for stock_id: ${portfolioItem.stock_id}`
+          );
+          return {
+            stock_id: portfolioItem.stock_id,
+            ticker: "Unknown",
+            quantity: portfolioItem.quantity,
+            regularmarketprice: 0,
+            total_value: 0,
+          };
+        }
+
+        const latestPrice =
+          stock.prices?.[stock.prices.length - 1]?.regularmarketprice || 0;
 
         return {
-          stock_id: mongoItem.stock_id,
-          ticker: pgItem ? pgItem.ticker : "N/A",
-          quantity: mongoItem.quantity["$numberInt"] || mongoItem.quantity,
-          regularmarketprice: pgItem ? pgItem.regularmarketprice : 0,
-          total_value: pgItem
-            ? (mongoItem.quantity["$numberInt"] || mongoItem.quantity) *
-              pgItem.regularmarketprice
-            : 0,
+          stock_id: portfolioItem.stock_id,
+          ticker: stock.ticker || "Unknown",
+          longname: stock.longname || "Unknown",
+          quantity: portfolioItem.quantity,
+          regularmarketprice: latestPrice,
+          total_value: portfolioItem.quantity * latestPrice,
         };
       });
 
-      // Send the merged data as the response
+      // Send the response with combined portfolio data
       res.status(200).json({
-        userData, // User data from PostgreSQL
-        combinedPortfolio, // Merged portfolio data from PostgreSQL and MongoDB
+        userData,
+        combinedPortfolio,
       });
     } catch (err) {
       console.error("Error fetching profile:", err);
