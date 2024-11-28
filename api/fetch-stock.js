@@ -115,103 +115,103 @@ module.exports = async (req, res) => {
         await Stock.updateOne({ ticker }, { $set: { longname } });
       }
 
-      // // Step 2: Get stock price
-      // const priceOptions = {
-      //   method: "POST",
-      //   hostname: "yahoo-finance160.p.rapidapi.com",
-      //   path: "/history",
-      //   headers: {
-      //     "x-rapidapi-key": process.env.RAPIDAPI_KEY,
-      //     "Content-Type": "application/json",
-      //   },
-      // };
+      // Step 2: Get stock price
+      const priceOptions = {
+        method: "POST",
+        hostname: "yahoo-finance160.p.rapidapi.com",
+        path: "/history",
+        headers: {
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+          "Content-Type": "application/json",
+        },
+      };
 
-      // // Insert price data
-      // const priceData = await fetchApi(priceOptions, {
-      //   stock: ticker,
-      //   period: "1mo",
-      // });
-      // if (priceData.metadata && priceData.records) {
-      //   const lastRecord = priceData.records[priceData.records.length - 1];
-      //   if (lastRecord) {
-      //     await Stock.updateOne(
-      //       { ticker },
-      //       {
-      //         $addToSet: {
-      //           prices: {
-      //             regularmarketprice: lastRecord.Close,
-      //             volume: lastRecord.Volume,
-      //             fiftytwoweekhigh: priceData.metadata.fiftyTwoWeekHigh,
-      //             fiftytwoweeklow: priceData.metadata.fiftyTwoWeekLow,
-      //             date: lastRecord.index,
-      //           },
-      //         },
-      //       }
-      //     );
-      //   }
-      // }
+      // Insert price data
+      const priceData = await fetchApi(priceOptions, {
+        stock: ticker,
+        period: "1mo",
+      });
+      if (priceData.metadata && priceData.records) {
+        const lastRecord = priceData.records[priceData.records.length - 1];
+        if (lastRecord) {
+          await Stock.updateOne(
+            { ticker },
+            {
+              $addToSet: {
+                prices: {
+                  regularmarketprice: lastRecord.Close,
+                  volume: lastRecord.Volume,
+                  fiftytwoweekhigh: priceData.metadata.fiftyTwoWeekHigh,
+                  fiftytwoweeklow: priceData.metadata.fiftyTwoWeekLow,
+                  date: lastRecord.index,
+                },
+              },
+            }
+          );
+        }
+      }
 
-      // // Step 3: Get stock news
-      // const newsOptions = {
-      //   method: "GET",
-      //   hostname: "mboum-finance.p.rapidapi.com",
-      //   path: `/v2/markets/news?tickers=${ticker}&type=ALL`,
-      //   headers: {
-      //     "x-rapidapi-key": process.env.RAPIDAPI_KEY,
-      //   },
-      // };
+      // Step 3: Get stock news
+      const newsOptions = {
+        method: "GET",
+        hostname: "mboum-finance.p.rapidapi.com",
+        path: `/v2/markets/news?tickers=${ticker}&type=ALL`,
+        headers: {
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+        },
+      };
 
-      // // Insert news data
-      // const newsData = await fetchApi(newsOptions);
-      // if (newsData.body && Array.isArray(newsData.body)) {
-      //   for (let article of newsData.body.slice(0, 10)) {
-      //     const { title, source, time, url } = article;
-      //     if (!time) continue;
+      // Insert news data
+      const newsData = await fetchApi(newsOptions);
+      if (newsData.body && Array.isArray(newsData.body)) {
+        for (let article of newsData.body.slice(0, 10)) {
+          const { title, source, time, url } = article;
+          if (!time) continue;
 
-      //     const formattedTime = moment(
-      //       time,
-      //       "MMM D, YYYY, h:mm A"
-      //     ).toISOString();
-      //     await Stock.updateOne(
-      //       { ticker },
-      //       {
-      //         $addToSet: {
-      //           news: {
-      //             date: formattedTime,
-      //             source,
-      //             title,
-      //             url,
-      //           },
-      //         },
-      //       }
-      //     );
-      //   }
-      // }
+          const formattedTime = moment(
+            time,
+            "MMM D, YYYY, h:mm A"
+          ).toISOString();
+          await Stock.updateOne(
+            { ticker },
+            {
+              $addToSet: {
+                news: {
+                  date: formattedTime,
+                  source,
+                  title,
+                  url,
+                },
+              },
+            }
+          );
+        }
+      }
 
-      // // Step 4: Get stock sentiments
-      // const sentimentOptions = {
-      //   method: "GET",
-      //   hostname: "us-stocks-news-sentiment-data.p.rapidapi.com",
-      //   path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
-      //   headers: {
-      //     "x-rapidapi-key": process.env.RAPIDAPI_KEY,
-      //   },
-      // };
+      // Step 4: Get stock sentiments
+      const sentimentOptions = {
+        method: "GET",
+        hostname: "us-stocks-news-sentiment-data.p.rapidapi.com",
+        path: `/${ticker}?dateTo=${formattedDate}&dateFrom=${formattedDate}`,
+        headers: {
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+        },
+      };
 
-      // // Update sentiment data
-      // const sentimentData = await fetchApi(sentimentOptions);
-      // if (sentimentData.sentiments && sentimentData.sentiments.length > 0) {
-      //   const sentiment = sentimentData.sentiments[0];
-      //   await Stock.updateOne(
-      //     { ticker },
-      //     {
-      //       sentiment: {
-      //         value: sentiment.sentimentValue,
-      //         date: sentiment.date,
-      //       },
-      //     }
-      //   );
-      // }
+      // Update sentiment data
+      const sentimentData = await fetchApi(sentimentOptions);
+      if (sentimentData.sentiments && sentimentData.sentiments.length > 0) {
+        const sentiment = sentimentData.sentiments[0];
+        await Stock.updateOne(
+          { ticker },
+          {
+            sentiment: {
+              value: sentiment.sentimentValue,
+              date: sentiment.date,
+            },
+          }
+        );
+      }
 
       // Step 5: Get ESG data
       const esgOptions = {
