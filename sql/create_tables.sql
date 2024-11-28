@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS public.prices
     volume bigint,
     CONSTRAINT price_pkey PRIMARY KEY (id),
     CONSTRAINT unique_ticker_date UNIQUE (ticker, date)
-)
+);
 
 CREATE TABLE IF NOT EXISTS public.sentiments
 (
