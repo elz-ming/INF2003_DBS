@@ -1,6 +1,8 @@
-const db = require("../db");
+const db = require("../db"); // PostgreSQL connection
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const Portfolio = require("../models/Portfolio"); // MongoDB Portfolio model
+const Stocks = require("../models/Stocks"); // MongoDB Portfolio model
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Ensure this is set in your environment
 
@@ -21,49 +23,85 @@ module.exports = async (req, res) => {
       const decoded = jwt.verify(token, JWT_SECRET_KEY);
       const userId = decoded.userId;
 
-      const [userData, portfolioData] = await Promise.all([
-        // Query 1: Get User Data
-        db.query(
-          `
-          SELECT name, 
-                  wallet_balance 
-          FROM users 
-          WHERE id = $1;
-        `,
-          [userId]
-        ),
+      // Fetch user data from PostgreSQL
+      const userDataResult = await db.query(
+        "SELECT id, name, wallet_balance FROM users WHERE id = $1",
+        [userId]
+      );
 
-        db.query(
-          `
-          SELECT s.ticker,
-                  p.quantity, 
-                  pr.regularmarketprice
-          FROM portfolios p
-          JOIN stocks s 
-          ON p.stock_id = s.id
-          JOIN prices pr 
-          ON pr.ticker = s.ticker
-          WHERE p.user_id = $1
-          AND pr.date = (
-            SELECT MAX(date) 
-            FROM prices 
-            WHERE ticker = s.ticker
+      if (userDataResult.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const userData = userDataResult.rows[0];
+
+      // ====== Portfolio-related data retrieval ====== //
+
+      // Step 1: Fetch MongoDB portfolio data for the user
+      const mongoPortfolio = await Portfolio.find({ user_id: userId });
+
+      if (!mongoPortfolio || mongoPortfolio.length === 0) {
+        return res.status(200).json({
+          userData,
+          combinedPortfolio: [],
+          message: "No portfolio data found for this user.",
+        });
+      }
+
+      // Step 2: Extract stock IDs from the MongoDB portfolio
+      const stockIds = mongoPortfolio.map((item) => item.stock_id);
+
+      // Debug: Log stockIds to verify correctness
+      console.log("Fetching stocks for IDs:", stockIds);
+
+      // Step 3: Fetch stock data from MongoDB
+      // Ensure all stockIds are treated as strings
+      const stocks = await Stocks.find({ _id: { $in: stockIds } });
+
+      // Step 4: Merge portfolio and stock data
+      const stockMap = stocks.reduce((acc, stock) => {
+        acc[stock._id] = stock; // Use string-based IDs as keys
+        return acc;
+      }, {});
+
+      const combinedPortfolio = mongoPortfolio.map((portfolioItem) => {
+        const stock = stockMap[portfolioItem.stock_id];
+        if (!stock) {
+          console.warn(
+            `Stock data not found for stock_id: ${portfolioItem.stock_id}`
           );
-        `,
-          [userId]
-        ),
-      ]);
+          return {
+            stock_id: portfolioItem.stock_id,
+            ticker: "Unknown",
+            quantity: portfolioItem.quantity,
+            regularmarketprice: 0,
+            total_value: 0,
+          };
+        }
 
+        const latestPrice =
+          stock.prices?.[stock.prices.length - 1]?.regularmarketprice || 0;
+
+        return {
+          stock_id: portfolioItem.stock_id,
+          ticker: stock.ticker || "Unknown",
+          longname: stock.longname || "Unknown",
+          quantity: portfolioItem.quantity,
+          regularmarketprice: latestPrice,
+          total_value: portfolioItem.quantity * latestPrice,
+        };
+      });
+
+      // Send the response with combined portfolio data
       res.status(200).json({
-        userData: userData.rows[0], // Only take the latest row if available
-        portfolioData: portfolioData.rows, // Can have multiple rows depending on the data
+        userData,
+        combinedPortfolio,
       });
     } catch (err) {
       console.error("Error fetching profile:", err);
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Internal Server Error" }));
     }
-    // Handle POST request - Update User Profile
   } else if (req.method === "POST") {
     try {
       // Parse the cookie to get the token
@@ -110,8 +148,6 @@ module.exports = async (req, res) => {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Internal Server Error" }));
     }
-
-    // Handle unsupported methods
   } else if (req.method === "DELETE") {
     // Handle DELETE request - Delete User Account
     try {
