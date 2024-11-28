@@ -11,58 +11,48 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: "Ticker is required" });
       }
 
-      // Use Promise.all to run the queries concurrently
-      const [stockData, esgData, newsData] = await Promise.all([
-        // Query 1: Fetch stock data
-        db.query(
-          `
-          SELECT stocks.longname,
-                  prices.regularmarketprice, 
-                  prices.volume,
-                  prices.fiftytwoweekhigh,
-                  prices.fiftytwoweeklow,
-                  prices.date
-          FROM stocks
-          JOIN prices
-          ON prices.ticker = stocks.ticker
-          WHERE stocks.ticker = $1
-          ORDER BY prices.date DESC
-          LIMIT 1;
-        `,
-          [ticker]
-        ),
+      // Find the stock document in MongoDB
+      const stock = await Stock.findOne({ ticker });
 
-        // Query 2: Fetch ESG data
-        db.query(
-          `
-          SELECT environmental_pillar_score, 
-                 social_pillar_score, 
-                 governance_pillar_score
-          FROM esg
-          WHERE ticker = $1;
-        `,
-          [ticker]
-        ),
+      if (!stock) {
+        return res.status(404).json({ error: "Stock not found" });
+      }
 
-        // Query 3: Fetch related news
-        db.query(
-          `
-          SELECT title,
-                 source,
-                 url,
-                 date
-          FROM news
-          WHERE ticker = $1;
-        `,
-          [ticker]
-        ),
-      ]);
+      // Extract the latest price, ESG data, and related news
+      const latestPrice =
+        stock.prices?.length > 0
+          ? stock.prices.reduce((latest, current) =>
+              new Date(current.date) > new Date(latest.date) ? current : latest
+            )
+          : null;
+
+      const esgData = stock.esg || null;
+      const newsData = stock.news || [];
 
       // Send the results of all three queries as a single JSON response
       res.status(200).json({
-        stockData: stockData.rows[0], // Only take the latest row if available
-        esgData: esgData.rows[0], // Can have multiple rows depending on the data
-        newsData: newsData.rows, // Can have multiple rows depending on the data
+        stockData: {
+          longname: stock.longname,
+          price: latestPrice?.regularmarketprice || null,
+          volume: latestPrice?.volume || null,
+          fiftyTwoWeekHigh: latestPrice?.fiftytwoweekhigh || null,
+          fiftyTwoWeekLow: latestPrice?.fiftytwoweeklow || null,
+          date: latestPrice?.date || null,
+        },
+        esgData: esgData
+          ? {
+              environmental_pillar_score: esgData.environment_pillar_score,
+              social_pillar_score: esgData.social_pillar_score,
+              governance_pillar_score: esgData.governance_pillar_score,
+              date: esgData.date,
+            }
+          : null,
+        newsData: newsData.map((news) => ({
+          title: news.title,
+          source: news.source,
+          url: news.url,
+          date: news.date,
+        })),
       });
     } catch (error) {
       // Send an error response if something goes wrong
