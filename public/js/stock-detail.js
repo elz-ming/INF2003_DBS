@@ -120,15 +120,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (!data.portfolioData) {
+      if (!data.combinedPortfolio) {
         console.error("Portfolio data not found.");
         return;
       }
 
       // Convert wallet_balance to a number, in case it's a string or another type
       walletBalance = parseFloat(data.userData.wallet_balance);
-      stock = data.portfolioData.find((item) => item.ticker === ticker);
-      stockQuantity = stock.quantity || 0;
+      stock = data.combinedPortfolio.find((item) => item.ticker === ticker);
+      if (stock) {
+        stockQuantity = stock.quantity || 0;
+      }
     })
     .catch((error) => {
       console.error("Error fetching profile data:", error);
@@ -159,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const quantity = parseInt(amountInput.value);
     const amount = parseFloat(modalAmount.textContent.replace("$", ""));
 
-    console.log(amount);
     if (isNaN(amount) || amount <= 0) {
       alert("Please enter a valid amount.");
       return;
@@ -169,6 +170,17 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Insufficient funds.");
       return;
     }
+
+    console.log(
+      "Action:",
+      action,
+      "Quantity:",
+      quantity,
+      "Amount:",
+      amount,
+      "Ticker:",
+      ticker
+    );
 
     try {
       const response = await fetch("/api/stock-transaction", {

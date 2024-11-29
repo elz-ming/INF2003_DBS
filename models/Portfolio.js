@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
-const portfolioSchema = new mongoose.Schema({
+const portfolioSchema = new Schema({
   user_id: {
     type: String,
     required: true,
     ref: "User",
   },
   stock_id: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
     ref: "Stock",
   },
