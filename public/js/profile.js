@@ -1,68 +1,53 @@
-document
-  .addEventListener("DOMContentLoaded", function () {
-    let walletBalance = 0;
-    let userData;
-    let combinedPortfolio = [];
+let walletBalance = 0;
 
-    // Fetch the profile data from the API
-    fetch("/api/profile")
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Failed to load profile");
-        }
-      })
-      .then((data) => {
-        if (!data.userData) {
-          console.error("User Data not found.");
-          return;
-        }
+document.addEventListener("DOMContentLoaded", function () {
+  let userData;
+  let combinedPortfolio = [];
 
-        if (!data.combinedPortfolio) {
-          console.error("Combined Portfolio Data not found.");
-          return;
-        }
+  // Fetch the profile data from the API
+  fetch("/api/profile")
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to load profile");
+      }
+    })
+    .then((data) => {
+      if (!data.userData) {
+        console.error("User Data not found.");
+        return;
+      }
 
-        // Assign fetched data to local variables
-        userData = data.userData;
-        combinedPortfolio = data.combinedPortfolio || [];
+      if (!data.combinedPortfolio) {
+        console.error("Combined Portfolio Data not found.");
+        return;
+      }
 
-        // Convert wallet_balance to a number
-        walletBalance = parseFloat(userData.wallet_balance);
-        if (isNaN(walletBalance)) {
-          console.error("Wallet balance is not a valid number.");
-          return;
-        }
+      // Assign fetched data to local variables
+      userData = data.userData;
+      combinedPortfolio = data.combinedPortfolio || [];
 
-        // Display the name and wallet balance on the profile page
-        document.getElementById("profile-name").textContent = userData.name;
-        document.getElementById(
-          "wallet-balance"
-        ).textContent = `$${walletBalance.toFixed(2)}`;
+      // Convert wallet_balance to a number
+      walletBalance = parseFloat(userData.wallet_balance);
+      if (isNaN(walletBalance)) {
+        console.error("Wallet balance is not a valid number.");
+        return;
+      }
 
-        // Render the portfolio pie chart with combined portfolio data
-        renderPortfolioChart(combinedPortfolio);
-      })
-      .catch((error) => {
-        console.error("Error fetching profile data:", error);
-      });
+      // Display the name and wallet balance on the profile page
+      document.getElementById("profile-name").textContent = userData.name;
+      document.getElementById(
+        "wallet-balance"
+      ).textContent = `$${walletBalance.toFixed(2)}`;
 
-    // Display the name and wallet balance on the profile page
-    document.getElementById("profile-name").textContent = userData.name;
-    document.getElementById(
-      "wallet-balance"
-    ).textContent = `$${walletBalance.toFixed(2)}`;
-
-    // Handle portfolio section rendering based on data availability
-    renderPortfolioSection(portfolioData);
-
-    // Display only one MongoDB portfolio entry for testing
-    displaySingleMongoEntry(mongoPortfolio);
-  })
-  .catch((error) => {
-    console.error("Error fetching profile data:", error);
-  });
+      // Render the portfolio pie chart with combined portfolio data
+      renderPortfolioChart(combinedPortfolio);
+    })
+    .catch((error) => {
+      console.error("Error fetching profile data:", error);
+    });
+});
 
 const depositButton = document.getElementById("deposit");
 const withdrawButton = document.getElementById("withdraw");

@@ -8,7 +8,7 @@ const portfolioSchema = new Schema({
     ref: "User",
   },
   stock_id: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
     ref: "Stock",
   },

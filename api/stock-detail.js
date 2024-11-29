@@ -1,4 +1,5 @@
 const db = require("../db"); // Import your database connection setup
+const Stock = require("../models/Stock"); // Import your Stock model
 
 module.exports = async (req, res) => {
   if (req.method === "GET") {
@@ -33,10 +34,16 @@ module.exports = async (req, res) => {
       res.status(200).json({
         stockData: {
           longname: stock.longname,
-          price: latestPrice?.regularmarketprice || null,
+          regularmarketprice: latestPrice
+            ? parseFloat(latestPrice.regularmarketprice).toFixed(2)
+            : null, // Format to 2 decimal places
           volume: latestPrice?.volume || null,
-          fiftyTwoWeekHigh: latestPrice?.fiftytwoweekhigh || null,
-          fiftyTwoWeekLow: latestPrice?.fiftytwoweeklow || null,
+          fiftytwoweekhigh: latestPrice
+            ? parseFloat(latestPrice.fiftytwoweekhigh).toFixed(2)
+            : null, // Format to 2 decimal places
+          fiftytwoweeklow: latestPrice
+            ? parseFloat(latestPrice.fiftytwoweeklow).toFixed(2)
+            : null, // Format to 2 decimal places
           date: latestPrice?.date || null,
         },
         esgData: esgData

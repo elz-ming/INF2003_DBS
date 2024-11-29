@@ -1,8 +1,9 @@
 const db = require("../db"); // PostgreSQL connection
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const mongoose = require("mongoose");
 const Portfolio = require("../models/Portfolio"); // MongoDB Portfolio model
-const Stocks = require("../models/Stocks"); // MongoDB Portfolio model
+const Stock = require("../models/Stock"); // MongoDB Portfolio model
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Ensure this is set in your environment
 
@@ -49,14 +50,22 @@ module.exports = async (req, res) => {
       }
 
       // Step 2: Extract stock IDs from the MongoDB portfolio
-      const stockIds = mongoPortfolio.map((item) => item.stock_id);
+      console.log("MongoDB Portfolio:", mongoPortfolio);
+
+      const stockIds = mongoPortfolio
+        .map((item) =>
+          mongoose.Types.ObjectId.isValid(item.stock_id)
+            ? new mongoose.Types.ObjectId(item.stock_id)
+            : null
+        )
+        .filter((id) => id);
 
       // Debug: Log stockIds to verify correctness
       console.log("Fetching stocks for IDs:", stockIds);
 
       // Step 3: Fetch stock data from MongoDB
       // Ensure all stockIds are treated as strings
-      const stocks = await Stocks.find({ _id: { $in: stockIds } });
+      const stocks = await Stock.find({ _id: { $in: stockIds } });
 
       // Step 4: Merge portfolio and stock data
       const stockMap = stocks.reduce((acc, stock) => {
@@ -93,7 +102,7 @@ module.exports = async (req, res) => {
       });
 
       // Send the response with combined portfolio data
-      res.status(200).json({
+      return res.status(200).json({
         userData,
         combinedPortfolio,
       });

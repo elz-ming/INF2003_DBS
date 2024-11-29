@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const db = require("../db");
+const Stock = require("../models/Stock");
 const Portfolio = require("../models/Portfolio");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -37,23 +38,26 @@ module.exports = async (req, res) => {
     const userId = decoded.userId;
 
     // Retrieve stock details
-    const read_result = await db.query(
-      `SELECT stocks.id, 
-                prices.regularmarketprice 
-      FROM stocks
-      JOIN prices
-      ON stocks.ticker = prices.ticker 
-      WHERE stocks.ticker = $1`,
-      [ticker]
-    );
+    const stock = await Stock.findOne({ ticker }).select("id prices").lean();
 
-    if (read_result.rows.length === 0) {
+    if (!stock) {
       return res.status(404).json({ error: "Stock not found." });
     }
 
-    const read_row = read_result.rows[0];
-    const stockId = read_row.id;
-    const price = read_row.regularmarketprice;
+    // Extract the latest price from the prices array
+    const latestPrice =
+      stock.prices?.length > 0
+        ? stock.prices[stock.prices.length - 1].regularmarketprice
+        : null;
+
+    if (!latestPrice) {
+      return res
+        .status(404)
+        .json({ error: "No price data available for this stock." });
+    }
+
+    const stockId = stock._id; // MongoDB document ID
+    const price = latestPrice;
 
     if (action === "sell") {
       // Handle Sell Action
@@ -69,14 +73,6 @@ module.exports = async (req, res) => {
         `;
         const transactionValues = [amount, userId, stockId, price, quantity];
 
-        // Update portfolio
-        const updatePortfolioQuery = `
-          UPDATE portfolios
-          SET quantity = quantity - $3
-          WHERE user_id = $1 AND stock_id = $2 AND quantity >= $3
-        `;
-        const portfolioValues = [userId, stockId, quantity];
-
         // Update portfolio in MongoDB
         const mongoSell = await Portfolio.findOneAndUpdate(
           { user_id: userId, stock_id: stockId },
@@ -91,19 +87,10 @@ module.exports = async (req, res) => {
         }
 
         // Execute the queries concurrently using Promise.all
-        const [sellResult, transactionResult, updateResult] = await Promise.all(
-          [
-            db.query(sellQuery, sellValues),
-            db.query(insertTransactionQuery, transactionValues),
-            db.query(updatePortfolioQuery, portfolioValues),
-          ]
-        );
-
-        if (updateResult.rowCount === 0) {
-          return res
-            .status(400)
-            .json({ error: "Insufficient stock quantity to sell." });
-        }
+        const [sellResult, transactionResult] = await Promise.all([
+          db.query(sellQuery, sellValues),
+          db.query(insertTransactionQuery, transactionValues),
+        ]);
 
         return res
           .status(200)
@@ -128,15 +115,6 @@ module.exports = async (req, res) => {
         `;
         const transactionValues = [amount, userId, stockId, price, quantity];
 
-        // Insert or update portfolio record
-        const insertPortfolioQuery = `
-          INSERT INTO portfolios (user_id, stock_id, quantity)
-          VALUES ($1, $2, $3)
-          ON CONFLICT (user_id, stock_id)
-          DO UPDATE SET quantity = portfolios.quantity + EXCLUDED.quantity;
-        `;
-        const portfolioValues = [userId, stockId, quantity];
-
         // Insert or update portfolio record in MongoDB
         const mongoBuy = await Portfolio.findOneAndUpdate(
           { user_id: userId, stock_id: stockId },
@@ -145,12 +123,10 @@ module.exports = async (req, res) => {
         );
 
         // Execute the queries concurrently using Promise.all
-        const [buyResult, transactionResult, portfolioResult] =
-          await Promise.all([
-            db.query(buyQuery, buyValues),
-            db.query(insertTransactionQuery, transactionValues),
-            db.query(insertPortfolioQuery, portfolioValues),
-          ]);
+        const [buyResult, transactionResult] = await Promise.all([
+          db.query(buyQuery, buyValues),
+          db.query(insertTransactionQuery, transactionValues),
+        ]);
 
         return res
           .status(200)
