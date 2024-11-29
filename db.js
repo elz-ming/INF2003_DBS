@@ -20,11 +20,7 @@ postgresPool.on("error", (err) => {
 
 async function connectToMongoDB() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("Connected to MongoDB Atlas");
+    await mongoose.connect(process.env.MONGODB_URI);
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1);
