@@ -36,10 +36,7 @@ async function connectToMongoDB() {
     if (!isMongoConnected) {
       await mongoose.connect(process.env.MONGODB_URI, {
         bufferCommands: true, // Allow buffering until the connection is ready
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         serverSelectionTimeoutMS: 30000, // 30 seconds
-        serverSelectionTimeoutMS: 30000, // 30 seconds timeout
         maxPoolSize: 10, // Set connection pool size
       });
       isMongoConnected = true; // Prevent multiple connections
