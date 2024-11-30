@@ -1,46 +1,58 @@
 const { Pool } = require("pg");
-const mongoose = require("mongoose"); // MongoDB library
-require("dotenv").config(); // Load environment variables from .env file
+const mongoose = require("mongoose");
+require("dotenv").config(); // Load environment variables
 
-// Create a new pool of connections using environment variables
+// PostgreSQL Configuration
 const postgresPool = new Pool({
   connectionString: process.env.POSTGRES_URL,
-  // Explicitly set SSL options based on the environment
   ssl:
     process.env.NODE_ENV === "production"
       ? { rejectUnauthorized: false }
-      : false, // Set false for local development
+      : false, // Enable SSL in production
 });
 
-// Add error handling to log connection issues
+// PostgreSQL Error Handling
 postgresPool.on("error", (err) => {
-  console.error("Unexpected error on idle client", err);
-  process.exit(-1);
+  console.error("Unexpected error on idle PostgreSQL client", err);
+  process.exit(-1); // Exit if there's a persistent error
 });
+
+// Function to execute PostgreSQL queries
+async function queryPostgres(queryText, params) {
+  try {
+    const result = await postgresPool.query(queryText, params);
+    return result;
+  } catch (error) {
+    console.error("PostgreSQL Query Error:", error);
+    throw error;
+  }
+}
+
+// MongoDB Connection Setup
+let isMongoConnected = false;
 
 async function connectToMongoDB() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 30000, // 30 seconds timeout
-      bufferCommands: false, // Disable buffering
-      maxPoolSize: 10, // Connection pool size
-    });
-    console.log("Connected to MongoDB Atlas");
+    if (!isMongoConnected) {
+      await mongoose.connect(process.env.MONGODB_URI, {
+        bufferCommands: true, // Allow buffering until the connection is ready
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        serverSelectionTimeoutMS: 30000, // 30 seconds timeout
+        maxPoolSize: 10, // Set connection pool size
+      });
+      isMongoConnected = true; // Prevent multiple connections
+    }
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1);
   }
 }
 
-connectToMongoDB();
-
-// Export the query function for executing SQL commands
+// Export Both PostgreSQL and MongoDB
 module.exports = {
-  // PostgreSQL query function
-  query: (text, params) => postgresPool.query(text, params),
-
-  // MongoDB connection (useful if you need to access it elsewhere)
-  mongoose,
+  queryPostgres, // Function to query PostgreSQL
+  connectToMongoDB, // Function to connect to MongoDB
+  mongoose, // Export Mongoose for model definition
 };

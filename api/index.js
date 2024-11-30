@@ -1,29 +1,21 @@
-const db = require("../db"); // Import your database connection setup
+const db = require("../db"); // Import database setup
 const Stock = require("../models/Stock");
 
 module.exports = async (req, res) => {
   if (req.method === "GET") {
     try {
-      // Query to fetch stock tickers from the stockdata table
-      const result = await Stock.aggregate([
+      // Ensure MongoDB connection
+      await db.connectToMongoDB();
+
+      // Aggregation pipeline
+      const stocks = await Stock.aggregate([
         {
           $project: {
             ticker: 1,
             longname: 1,
-            sentimentValue: "$sentiment.value", // Extract sentiment value
+            sentimentValue: "$sentiment.value",
             latestPrice: {
-              $arrayElemAt: [
-                {
-                  $filter: {
-                    input: "$prices",
-                    as: "price",
-                    cond: {
-                      $eq: ["$$price.date", { $max: "$prices.date" }],
-                    },
-                  },
-                },
-                0,
-              ],
+              $arrayElemAt: ["$prices", -1], // Get the last price in the prices array
             },
           },
         },
@@ -32,19 +24,40 @@ module.exports = async (req, res) => {
             ticker: 1,
             longname: 1,
             sentimentValue: 1,
-            regularmarketprice: "$latestPrice.regularmarketprice", // Extract latest price
+            regularmarketprice: "$latestPrice.regularmarketprice",
           },
         },
       ]);
 
-      // Send the tickers as a JSON response
-      res.status(200).json(result);
+      // Check if stocks were found
+      if (!stocks || stocks.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No stock data found.",
+        });
+      }
+
+      // Respond with stocks data
+      res.status(200).json({
+        success: true,
+        data: stocks,
+      });
     } catch (error) {
       console.error("Error fetching stock data:", error);
-      res.status(500).send("Internal Server Error");
+
+      // Return detailed error for debugging
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      });
     }
   } else {
+    // Handle unsupported methods
     res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).json({
+      success: false,
+      message: `Method ${req.method} Not Allowed`,
+    });
   }
 };

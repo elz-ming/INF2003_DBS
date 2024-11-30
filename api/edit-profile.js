@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
   if (req.method === "GET") {
     // Handle fetching existing user profile data
     try {
-      const result = await db.query(
+      const result = await db.queryPostgres(
         "SELECT name, email FROM users WHERE id = $1",
         [userId]
       );
@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
     `;
 
     try {
-      await db.query(updateQuery, values);
+      await db.queryPostgres(updateQuery, values);
       res.writeHead(302, { Location: "/screens/profile.html" });
       res.end();
     } catch (error) {

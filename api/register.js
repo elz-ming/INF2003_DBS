@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     // Check if the user already exists
     try {
       // Check if the email already exists
-      const existingUserResult = await db.query(
+      const existingUserResult = await db.queryPostgres(
         "SELECT * FROM users WHERE email = $1",
         [email]
       );
@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
       // Insert the new user into the database
-      const insertResult = await db.query(
+      const insertResult = await db.queryPostgres(
         "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id",
         [name, email, hashedPassword]
       );

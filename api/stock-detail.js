@@ -2,6 +2,7 @@ const db = require("../db"); // Import your database connection setup
 const Stock = require("../models/Stock"); // Import your Stock model
 
 module.exports = async (req, res) => {
+  await db.connectToMongoDB();
   if (req.method === "GET") {
     try {
       // Extract the ticker from the query parameter, e.g., /api/stock?ticker=AAPL

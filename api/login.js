@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
       return res.status(400).send("Email and password are required.");
     }
 
-    const userResult = await db.query(
+    const userResult = await db.queryPostgres(
       "SELECT id, password FROM users WHERE email = $1",
       [email]
     );

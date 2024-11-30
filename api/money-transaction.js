@@ -16,24 +16,24 @@ module.exports = async (req, res) => {
       const depositQuery =
         "UPDATE users SET wallet_balance = wallet_balance + $1 WHERE id = $2";
       const depositValues = [amount, userId];
-      await db.query(depositQuery, depositValues);
+      await db.queryPostgres(depositQuery, depositValues);
 
       const insertTransactionQuery =
         "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'deposit', 'ocbc')";
       const transactionValues = [amount, userId];
-      await db.query(insertTransactionQuery, transactionValues);
+      await db.queryPostgres(insertTransactionQuery, transactionValues);
 
       return res.status(200).json({ success: true });
     } else if (action === "withdraw") {
       const withdrawQuery =
         "UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2";
       const withdrawValues = [amount, userId];
-      await db.query(withdrawQuery, withdrawValues);
+      await db.queryPostgres(withdrawQuery, withdrawValues);
 
       const insertTransactionQuery =
         "INSERT INTO money_transactions (amount, user_id, type, bank) VALUES ($1, $2, 'withdraw', 'ocbc')";
       const transactionValues = [amount, userId];
-      await db.query(insertTransactionQuery, transactionValues);
+      await db.queryPostgres(insertTransactionQuery, transactionValues);
 
       return res.status(200).json({ success: true });
     }

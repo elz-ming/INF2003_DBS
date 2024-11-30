@@ -10,6 +10,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Ensure this is set in your
 module.exports = async (req, res) => {
   if (req.method === "GET") {
     try {
+      await db.connectToMongoDB();
       // Parse the cookie to get the token
       const cookies = cookie.parse(req.headers.cookie || "");
       const token = cookies.authToken;
@@ -25,7 +26,7 @@ module.exports = async (req, res) => {
       const userId = decoded.userId;
 
       // Fetch user data from PostgreSQL
-      const userDataResult = await db.query(
+      const userDataResult = await db.queryPostgres(
         "SELECT id, name, wallet_balance FROM users WHERE id = $1",
         [userId]
       );
@@ -134,7 +135,7 @@ module.exports = async (req, res) => {
       }
 
       // Update the user profile in the database
-      await db.query(
+      await db.queryPostgres(
         "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4",
         [name, email, password, userId]
       );
@@ -170,7 +171,7 @@ module.exports = async (req, res) => {
       const userId = decoded.userId;
 
       // Delete the user from the database
-      await db.query("DELETE FROM users WHERE id = $1", [userId]);
+      await db.queryPostgres("DELETE FROM users WHERE id = $1", [userId]);
 
       // Clear the authentication cookie to log out the user
       res.setHeader(

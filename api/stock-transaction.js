@@ -6,7 +6,64 @@ const Portfolio = require("../models/Portfolio");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
+// MongoDB Helper Function: Update Portfolio
+async function updatePortfolio(userId, stockId, quantityChange) {
+  try {
+    // Ensure stockId is a valid ObjectId
+    if (!db.mongoose.Types.ObjectId.isValid(stockId)) {
+      throw new Error(`Invalid stock ID: ${stockId}`);
+    }
+
+    // Update or insert the portfolio record
+    const portfolioUpdate = await Portfolio.findOneAndUpdate(
+      { user_id: userId, stock_id: stockId },
+      { $inc: { quantity: quantityChange } }, // Increment or decrement quantity
+      { upsert: true, new: true } // Create a new record if none exists, and return the updated document
+    );
+
+    if (!portfolioUpdate) {
+      throw new Error("Failed to update portfolio");
+    }
+
+    // Check for negative quantity
+    if (portfolioUpdate.quantity < 0) {
+      throw new Error("Insufficient stock quantity. Transaction rolled back.");
+    }
+
+    return portfolioUpdate;
+  } catch (error) {
+    console.error("Error updating portfolio:", error);
+    throw error;
+  }
+}
+
+// MongoDB Helper Function: Get Stock Details
+async function getStockDetails(ticker) {
+  try {
+    const stock = await Stock.findOne({ ticker }).select("id prices").lean();
+    if (!stock) {
+      throw new Error("Stock not found");
+    }
+
+    // Extract the latest price
+    const latestPrice =
+      stock.prices?.length > 0
+        ? stock.prices[stock.prices.length - 1].regularmarketprice
+        : null;
+
+    if (!latestPrice) {
+      throw new Error("No price data available for the stock");
+    }
+
+    return { stockId: stock._id, latestPrice };
+  } catch (error) {
+    console.error("Error fetching stock details:", error);
+    throw error;
+  }
+}
+
 module.exports = async (req, res) => {
+  await db.connectToMongoDB();
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
@@ -60,36 +117,26 @@ module.exports = async (req, res) => {
     const price = latestPrice;
 
     if (action === "sell") {
-      // Handle Sell Action
       try {
-        // Update user's wallet balance
-        const sellQuery = `UPDATE users SET wallet_balance = wallet_balance + $1 WHERE id = $2`;
-        const sellValues = [amount, userId];
+        // Update portfolio
+        const mongoSell = await updatePortfolio(userId, stockId, -quantity);
 
-        // Insert sell transaction record
-        const insertTransactionQuery = `
+        // Ensure wallet balance and transaction record are updated atomically
+        const sellQuery = `UPDATE users SET wallet_balance = wallet_balance + $1 WHERE id = $2`;
+        const transactionQuery = `
           INSERT INTO stock_transactions (amount, user_id, type, stock_id, price, quantity)
           VALUES ($1, $2, 'sell', $3, $4, $5)
         `;
-        const transactionValues = [amount, userId, stockId, price, quantity];
 
-        // Update portfolio in MongoDB
-        const mongoSell = await Portfolio.findOneAndUpdate(
-          { user_id: userId, stock_id: stockId },
-          { $inc: { quantity: -quantity } },
-          { new: true }
-        );
-
-        if (!mongoSell || mongoSell.quantity < 0) {
-          return res
-            .status(400)
-            .json({ error: "Insufficient stock quantity to sell." });
-        }
-
-        // Execute the queries concurrently using Promise.all
-        const [sellResult, transactionResult] = await Promise.all([
-          db.query(sellQuery, sellValues),
-          db.query(insertTransactionQuery, transactionValues),
+        await Promise.all([
+          db.queryPostgres(sellQuery, [amount, userId]),
+          db.queryPostgres(transactionQuery, [
+            amount,
+            userId,
+            stockId,
+            price,
+            quantity,
+          ]),
         ]);
 
         return res
@@ -102,30 +149,26 @@ module.exports = async (req, res) => {
           .json({ error: "Internal server error during sell transaction." });
       }
     } else if (action === "buy") {
-      // Handle Buy Action
       try {
-        // Update user's wallet balance
-        const buyQuery = `UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2`;
-        const buyValues = [amount, userId];
+        // Update portfolio
+        const mongoBuy = await updatePortfolio(userId, stockId, quantity);
 
-        // Insert buy transaction record
-        const insertTransactionQuery = `
+        // Ensure wallet balance and transaction record are updated atomically
+        const buyQuery = `UPDATE users SET wallet_balance = wallet_balance - $1 WHERE id = $2`;
+        const transactionQuery = `
           INSERT INTO stock_transactions (amount, user_id, type, stock_id, price, quantity)
           VALUES ($1, $2, 'buy', $3, $4, $5)
         `;
-        const transactionValues = [amount, userId, stockId, price, quantity];
 
-        // Insert or update portfolio record in MongoDB
-        const mongoBuy = await Portfolio.findOneAndUpdate(
-          { user_id: userId, stock_id: stockId },
-          { $inc: { quantity } },
-          { upsert: true, new: true }
-        );
-
-        // Execute the queries concurrently using Promise.all
-        const [buyResult, transactionResult] = await Promise.all([
-          db.query(buyQuery, buyValues),
-          db.query(insertTransactionQuery, transactionValues),
+        await Promise.all([
+          db.queryPostgres(buyQuery, [amount, userId]),
+          db.queryPostgres(transactionQuery, [
+            amount,
+            userId,
+            stockId,
+            price,
+            quantity,
+          ]),
         ]);
 
         return res

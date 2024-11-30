@@ -3,7 +3,7 @@ const db = require("./db");
 // Function to insert or update sentiment analysis data into the database
 const insertSentimentData = async (ticker, date, sentimentValue) => {
   try {
-    await db.query(
+    await db.queryPostgres(
       `INSERT INTO sentiments (ticker, date, sentiment)
        VALUES ($1, $2, $3)
        ON CONFLICT (ticker) 
@@ -36,7 +36,7 @@ const insertPriceData = async (
   volume
 ) => {
   try {
-    await db.query(
+    await db.queryPostgres(
       `INSERT INTO prices 
       (ticker, regularMarketPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, 
       regularMarketDayHigh, regularMarketDayLow, regularMarketVolume, 
@@ -81,7 +81,7 @@ const insertNewsData = async (
   ago
 ) => {
   try {
-    await db.query(
+    await db.queryPostgres(
       `INSERT INTO news (ticker, url, img, title, text, source, type, time, date, ago)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        ON CONFLICT (ticker, url) 

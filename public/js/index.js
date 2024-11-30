@@ -8,7 +8,7 @@ async function loadStocks() {
     const container = document.getElementById("data-body");
 
     // Loop through each ticker and create a div with class "stock"
-    results.forEach((result) => {
+    results.data.forEach((result) => {
       console.log(result);
       sentimentValue = parseFloat(result.sentimentValue).toFixed(2);
       price = parseFloat(result.regularmarketprice).toFixed(2);
