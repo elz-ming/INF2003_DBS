@@ -50,8 +50,6 @@ module.exports = async (req, res) => {
       }
 
       // Step 2: Extract stock IDs from the MongoDB portfolio
-      console.log("MongoDB Portfolio:", mongoPortfolio);
-
       const stockIds = mongoPortfolio
         .map((item) =>
           mongoose.Types.ObjectId.isValid(item.stock_id)
@@ -59,9 +57,6 @@ module.exports = async (req, res) => {
             : null
         )
         .filter((id) => id);
-
-      // Debug: Log stockIds to verify correctness
-      console.log("Fetching stocks for IDs:", stockIds);
 
       // Step 3: Fetch stock data from MongoDB
       // Ensure all stockIds are treated as strings
