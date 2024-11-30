@@ -19,13 +19,19 @@ postgresPool.on("error", (err) => {
 });
 
 async function connectToMongoDB() {
-  mongoose
-    .connect(process.env.MONGODB_URI, {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    })
-    .then(() => console.log("Connected to MongoDB Atlas"))
-    .catch((err) => console.error("Connection error:", err));
+      serverSelectionTimeoutMS: 30000, // 30 seconds timeout
+      bufferCommands: false, // Disable buffering
+      maxPoolSize: 10, // Connection pool size
+    });
+    console.log("Connected to MongoDB Atlas");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1);
+  }
 }
 
 connectToMongoDB();
